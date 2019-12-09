@@ -1,0 +1,10 @@
+
+library(shiny)
+library(DT)
+library(shinydashboard)
+library(tidyverse)
+library(RColorBrewer)
+library(dendextend)
+library(mixOmics)
+library(msmsEDA)
+library(dashboardthemes)
