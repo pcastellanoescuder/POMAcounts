@@ -8,7 +8,15 @@ dashboardPage(skin = "blue",
   
   dashboardSidebar(sidebarMenu(
     menuItem("Input Data", tabName = "inputdata", icon = icon("upload")),
-    menuItem("EDA", tabName = "eda")
+    menuItem("Exploratory Data Analysis", tabName = "eda", icon = icon("search"),
+             menuSubItem("Median Bar Plot", tabName = "mbp"),
+             menuSubItem("Normalization Plot", tabName = "norm"),
+             menuSubItem("Density Plot", tabName = "density"),
+             menuSubItem("Principal Component Analysis", tabName = "pca"),
+             menuSubItem("Clustering", tabName = "cluster"),
+             menuSubItem("Heatmap", tabName = "heatmap"),
+             menuSubItem("Important Features", tabName = "scatter"))
+
   )),
 
   dashboardBody(
@@ -21,8 +29,20 @@ dashboardPage(skin = "blue",
     tabItems(
       tabItem(tabName = "inputdata",
               source("ui-tab-inputdata.R",local=TRUE)$value),
-      tabItem(tabName = "eda",
-              source("ui-tab-eda.R",local=TRUE)$value)
+      tabItem(tabName = "mbp",
+              source("ui-tab-mbp.R",local=TRUE)$value),
+      tabItem(tabName = "norm",
+              source("ui-tab-norm.R",local=TRUE)$value),
+      tabItem(tabName = "density",
+              source("ui-tab-density.R",local=TRUE)$value),
+      tabItem(tabName = "pca",
+              source("ui-tab-pca.R",local=TRUE)$value),
+      tabItem(tabName = "cluster",
+              source("ui-tab-cluster.R",local=TRUE)$value),
+      tabItem(tabName = "heatmap",
+              source("ui-tab-heatmap.R",local=TRUE)$value),
+      tabItem(tabName = "scatter",
+              source("ui-tab-scatter.R",local=TRUE)$value)
       ),
 
     tags$hr(),

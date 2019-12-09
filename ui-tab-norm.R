@@ -1,0 +1,7 @@
+
+fluidPage(
+  
+  plotOutput("normplot")
+
+)
+

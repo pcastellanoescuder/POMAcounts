@@ -21,7 +21,7 @@ targetInput <- reactive({
   }
   
   else {
-    target <- read.table(infile$datapath, header = T)
+    target <- read.table(infile$datapath, header = T, sep = "\t")
   }
 })
 
