@@ -10,6 +10,8 @@ fluidPage(column(width = 3,
 
 column(width = 9,
        
+       downloadButton("download_plot3", "Download Plot"),
+       
        plotOutput("densityplot")
        
 ))

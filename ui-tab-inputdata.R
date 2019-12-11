@@ -1,6 +1,10 @@
 
 tabPanel("Input Data", 
          fluidRow(column(width = 3,
+                         
+                         downloadButton("report", "Exploratory report", style="color: #fff; background-color: #00b300; border-color: #009900"),
+                         br(),
+                         br(),
 
                          fileInput("proteines","Upload your proteomics file (.txt):",
                                    accept = c(

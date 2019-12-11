@@ -13,3 +13,15 @@ output$heatmap <- renderPlot({
   
 })
 
+output$download_plot7 <- downloadHandler(
+  filename =  function() {
+    paste0("Heatmap_", Sys.Date())
+  },
+  # content is a function with argument file. content writes the plot to the device
+  content = function(file) {
+    pdf(file) # open the pdf device
+    
+    print() # for GGPLOT
+    dev.off()  # turn the device off
+    
+  }) 

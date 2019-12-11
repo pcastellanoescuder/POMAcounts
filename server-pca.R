@@ -46,3 +46,16 @@ output$pcaplot <- renderPlot({
   PCAplot()$pcaplot
 })
 
+output$download_plot4 <- downloadHandler(
+  filename =  function() {
+    paste0("PCAPlot_", Sys.Date())
+  },
+  # content is a function with argument file. content writes the plot to the device
+  content = function(file) {
+    pdf(file) # open the pdf device
+    
+    print(PCAplot()$pcaplot) # for GGPLOT
+    dev.off()  # turn the device off
+    
+  }) 
+

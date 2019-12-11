@@ -33,3 +33,20 @@ output$contents <- DT::renderDataTable(proteinesInput(), class = 'cell-border st
 output$contents_tar <- DT::renderDataTable(targetInput(), class = 'cell-border stripe', 
                                        rownames = FALSE)
 
+output$report <- downloadHandler(
+  
+  filename = "EDA_POMA_Report.html",
+  content = function(file) {
+    
+    tempReport <- file.path(tempdir(), "EDA_POMA_Report.Rmd") 
+    file.copy("EDA_POMA_Report.Rmd", tempReport, overwrite = TRUE) 
+    
+    params <- list(n = proteinesInput(), t = targetInput())
+    
+    rmarkdown::render(tempReport, output_file = file,
+                      params = params,
+                      envir = new.env(parent = globalenv())
+    )
+  }
+)
+

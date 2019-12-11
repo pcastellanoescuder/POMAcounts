@@ -46,3 +46,32 @@ output$cluster_batch <- renderPlot({
     plot()
 })
 
+output$download_plot5 <- downloadHandler(
+  filename =  function() {
+    paste0("ClusterByGroups_", Sys.Date())
+  },
+  # content is a function with argument file. content writes the plot to the device
+  content = function(file) {
+    pdf(file) # open the pdf device
+    
+    print(Clusterplot()$dend1 %>%
+            plot()) # for GGPLOT
+    dev.off()  # turn the device off
+    
+  }) 
+
+output$download_plot6 <- downloadHandler(
+  filename =  function() {
+    paste0("ClusterByBatch_", Sys.Date())
+  },
+  # content is a function with argument file. content writes the plot to the device
+  content = function(file) {
+    pdf(file) # open the pdf device
+    
+    print(Clusterplot()$dend2 %>%
+            plot()) # for GGPLOT
+    dev.off()  # turn the device off
+    
+  }) 
+
+

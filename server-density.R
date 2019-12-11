@@ -57,3 +57,16 @@ output$densityplot <- renderPlot({
   Densityplot()$densityplot
 })
 
+output$download_plot3 <- downloadHandler(
+  filename =  function() {
+    paste0("DensityPlot_", Sys.Date())
+  },
+  # content is a function with argument file. content writes the plot to the device
+  content = function(file) {
+    pdf(file) # open the pdf device
+    
+    print(Densityplot()$densityplot) # for GGPLOT
+    dev.off()  # turn the device off
+    
+  }) 
+

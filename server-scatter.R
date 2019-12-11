@@ -106,3 +106,16 @@ output$scatter <- renderPlot({
   Scatterplot()$scatter
 })
 
+output$download_plot8 <- downloadHandler(
+  filename =  function() {
+    paste0("ImportantFeatures_", Sys.Date())
+  },
+  # content is a function with argument file. content writes the plot to the device
+  content = function(file) {
+    pdf(file) # open the pdf device
+    
+    print(Scatterplot()$scatter) # for GGPLOT
+    dev.off()  # turn the device off
+    
+  }) 
+

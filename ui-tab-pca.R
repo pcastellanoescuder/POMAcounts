@@ -13,6 +13,8 @@ fluidPage(column(width = 3,
           
           column(width = 9,
                  
+                 downloadButton("download_plot4", "Download Plot"),
+                 
                  plotOutput("pcaplot")
                  
                  ))
