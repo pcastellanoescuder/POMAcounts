@@ -33,6 +33,8 @@ target <- params$t
 
 # data <- read.table("/Users/pol/Dropbox/JosepVillanueva/231eribulin-counts.txt", header = T, sep = "\t")
 # target <- read.table("/Users/pol/Dropbox/JosepVillanueva/231eribulin-samples.txt", header = T, sep = "\t")
+data <- read.table("/home/pol/Escritorio/R problems/231eribulin-counts.txt", header = T, sep = "\t")
+target <- read.table("/home/pol/Escritorio/R problems/231eribulin-samples.txt", header = T, sep = "\t")
 ```
  
 ```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
@@ -41,37 +43,16 @@ colnames(target) <- c("Sample", "Group", "Batch")
 prot_names <- data$Accession
 remove <- ncol(data) - nrow(target)
 data <- data[, -c(1:remove)]
-counts <- apply(data, 2, function(x) as.numeric(as.character(x)))
+# counts <- apply(data, 2, function(x) as.numeric(as.character(x)))
 data <- data.frame(t(data))
 colnames(data) <- prot_names
-```
-
-```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
-zeros <- data[, -which(colSums(data) != 0)]
-data <- data[, which(colSums(data) != 0)]
-```
-
-```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
-nas <- sapply(data, function(x) sum(is.na(x)))
-nas <- data.frame(number = nas[nas != 0])
-nas$names <- rownames(nas)
 ```
 
 # Summary
 
   + Your data has **`r nrow(target)`** subjects, **`r ncol(data)`** proteines and **`r length(table(target$Group))`** groups, that are **`r noquote(paste(shQuote(levels(as.factor(target$Group))), collapse=", "))`**.    
 
-  + A **`r round(sum(is.na(data))/(nrow(data)*(ncol(data)))*100, 3)`%** of the values in your data are NAs (missing values). `r ifelse(nrow(nas) >= 1, paste0("The variables that have NA values are **",noquote(paste(shQuote(paste0(rownames(nas)," (",nas$number,")")), collapse=", ")),"**."), "")`
-  
-```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
-if (nrow(nas) >= 1){
-  nas%>%
-    plot_ly(x=~names, y= ~number, color= ~names, legendgroup=~names, type = "bar", opacity = 0.7) %>%
-    layout(title = "Missing values by Metabolite", yaxis = list(title = "Missing Values"), xaxis = list(title = ""))
-}
-```
-
-  + Removed from the exploratory analysis **`r ncol(zeros)`** variables that only have zeros. `r ifelse(ncol(zeros) >= 1, paste0("This variables are **",noquote(paste(shQuote(colnames(zeros)), collapse=", ")),"**."), "")`
+  + A **`r round(sum(is.na(data))/(nrow(data)*(ncol(data)))*100, 2)`%** of the values in your data are NAs (missing values). 
 
 ## Subject count by Groups
 
@@ -84,43 +65,224 @@ colnames(counts) <- c("Group", "Counts")
 
 ggplot(counts, aes(Group, Counts, fill = Group)) +
   geom_bar(stat="identity") +
-  theme_minimal()
+  theme_minimal() +
+  scale_fill_brewer(palette = "Dark2")
 ```
-
-## Normality and Homogeneity
+  
+# Barplot scaled to the median
 
 ```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
-normality <- data.frame(pval = apply(data,2, function(x) {shapiro.test(x)$p.value}))
-normality$pval <- p.adjust(normality$pval, method = "fdr")
-percent.norm <- round((length(normality[normality$pval > 0.05,])/nrow(normality))*100,3)
+proteines <- params$n
+target <- params$t
 
-normality$names <- rownames(normality)
-names.normality <- normality[normality$pval > 0.05,2]
+### 
 
-##
+colnames(target) <- c("Sample", "Treatment", "Batch")
 
-homo <- data.frame(pval=apply(dataX,2,function(x) {bartlett.test(x, dataX$Group)$p.value}))
-homo$pval <- p.adjust(homo$pval, method = "fdr")
-percent.homo <- round((length(homo[homo$pval > 0.05,])/nrow(homo))*100,3)
+rownames(proteines) <- proteines$Accession
+remove <- ncol(proteines) - nrow(target)
+proteines <- proteines[, -c(1:remove)]
 
-homo$names <- rownames(homo)
-names.homo <- homo[homo$pval > 0.05,2]
+prot_names <- rownames(proteines)
+counts <- apply(proteines, 2, function(x) as.numeric(as.character(x)))
+
+## PRE-PROCESSING (pp.msms.data)
+
+if (sum(is.na(counts))) {
+  counts[is.na(counts)] <- 0
+}
+
+fl1 <- apply(counts, 1, function(x) sum(x) > 0)
+
+fl2 <- substring(prot_names, nchar(prot_names) - 1) == "-R"
+flags <- (!fl2 & fl1)
+counts <- counts[flags, ]
+
+###
+
+tcnts <- apply(counts, 2, sum)
+medt <- median(tcnts)
+div <- data.frame(median = tcnts/medt)
+div$sample <- rownames(div)
+div$Group <- target$Treatment
+
+ggplot(div, aes(x = sample, y = median, fill = Group)) +
+  geom_bar(stat="identity")+
+  theme_minimal() +
+  xlab("") +
+  geom_hline(yintercept = 1, linetype = "dashed") +
+  scale_fill_brewer(palette = "Dark2") + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top")
+
 ```
 
-  + **`r nrow(normality[normality$pval > 0.05,])`** out of your **`r nrow(normality)`** variables (**`r percent.norm`%**) have a normal distribution before log transformation. 
+# Normalization plot
+
+```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
+spcm2 <- batch.neutralize(counts, target$Batch, half = TRUE, sqrt.trans = TRUE)
+
+total <- as.data.frame(t(spcm2))
+colnames(total) <- prot_names
+
+total <- cbind(target[, 1:2], total)
+colnames(total)[1:2] <- c("Sample", "Group")
+
+### NORMALIZATION
+
+normtable_subjects <- total %>% reshape2::melt()
+
+normtable_subjects %>% 
+  ggplot(aes(Sample, log2(value + 1), color = Group)) + 
+  geom_jitter() + 
+  geom_boxplot(color = "black", outlier.colour = NA) + 
+  theme(legend.position = "none") + 
+  theme_minimal() + 
+  xlab("") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+        legend.position = "top") +
+  scale_color_brewer(palette = "Dark2")
+```
+
+# Density plot
+
+```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
+normtable_subjects %>% 
+  ggplot(aes(x = value)) +
+  geom_density(aes(group = Sample, color = Group), alpha = 0.4) +
+  theme_minimal() +
+  theme(legend.position = "top") +
+  scale_color_brewer(palette = "Dark2")
+```
+
+# Principal Component Analysis
+
+```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
+res_pca1 <- mixOmics::pca(total[, 3:ncol(total)])
+res_pca <- cbind(target, res_pca1$x)
+
+ggplot(res_pca, aes(PC1, PC2, color = Treatment, shape = Batch)) +
+  geom_point(size = 3, alpha = 0.8) +
+  ggrepel::geom_label_repel(aes(label = Sample), show.legend = F) +
+  theme_minimal() +
+  xlab(paste0("PC1 (", round(100*(res_pca1$explained_variance)[1], 2), "%)")) +
+  ylab(paste0("PC2 (", round(100*(res_pca1$explained_variance)[2], 2), "%)")) +
+  scale_color_brewer(palette = "Dark2")
+```
+
+# Cluster by Group
+
+```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
+dend1 <- total[, 3:ncol(total)] %>% 
+  dist %>% 
+  hclust 
+order <- dend1$order
+target2 <- target[order, ]
+my_group <- as.numeric(as.factor(target2$Treatment))
+colSide <- brewer.pal(8, "Dark2")[my_group]
+
+dend1 <- dend1 %>%
+  as.dendrogram() %>%
+  set("labels_colors", colSide) %>%
+plot()
+```
+
+# Cluster by Batch
+
+```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
+dend2 <- total[, 3:ncol(total)] %>% 
+  dist %>% 
+  hclust 
+order <- dend2$order
+target2 <- target[order, ]
+my_group <- as.numeric(as.factor(target2$Batch))
+colSide <- brewer.pal(8, "Dark2")[my_group]
+
+dend2 <- dend2 %>%
+  as.dendrogram() %>%
+  set("labels_colors", colSide) %>%
+  plot()
+```
+
+# Heatmap
+
+```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
+my_group <- as.numeric(as.factor(target$Treatment))
+colSide <- brewer.pal(8, "Dark2")[my_group]
+colMain <- colorRampPalette( c("green", "black", "red"), space = "rgb")(64)
+
+heatmap(t(total[, 3:ncol(total)]), ColSideColors = colSide, col = colMain, labRow = NA)
+```
+
+# Important Features
+
+```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
+spc_scatterplot <- function(counts, treat, trans = "log2", minSpC = 2, minLFC = 1){
+    
+    treat <- as.factor(treat)
+    mspc <- data.frame(t(apply(counts, 1, function(x) tapply(x, treat, mean))))
+    mx <- apply(mspc[, 1:2], 1, max)
+    mn <- apply(mspc[, 1:2], 1, min)
+    fl <- apply(mspc[, 1:2], 1, function(x) max(x) >= minSpC) & abs(log2(mx/mn)) >= minLFC
+    
+    if (trans == "none") {
+      
+      s_mspc <- mspc[fl ,]
+      
+      p <- ggplot(mspc, aes(mspc[,1], mspc[,2])) +
+        geom_point() +
+        geom_point(s_mspc, mapping = aes(x = s_mspc[,1], y = s_mspc[,2], color = "red")) +
+        geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray") +
+        geom_abline(intercept = 0, slope = 2, linetype = "dashed", color = "navy") +
+        geom_abline(intercept = 0, slope = 0.5, linetype = "dashed", color = "navy") +
+        xlab(paste("mean SpC(", colnames(mspc)[1], ")", sep = "")) +
+        ylab(paste("mean SpC(", colnames(mspc)[2], ")", sep = "")) +
+        theme_minimal() +
+        theme(legend.position = "none")
+    }
+    
+    if (trans == "sqrt") {
+      
+      sqrtm <- sqrt(mspc)
+      
+      s_mspc <- sqrtm[fl ,]
+      
+      p <- ggplot(sqrtm, aes(sqrtm[,1], sqrtm[,2])) +
+        geom_point() +
+        geom_point(s_mspc, mapping = aes(x = s_mspc[,1], y = s_mspc[,2], color = "red")) +
+        geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray") +
+        geom_abline(intercept = 0, slope = sqrt(2), linetype = "dashed", color = "navy") +
+        geom_abline(intercept = 0, slope = 1/sqrt(2), linetype = "dashed", color = "navy") +
+        xlab(paste("root mean SpC(", colnames(mspc)[1], ")", sep = "")) +
+        ylab(paste("root mean SpC(", colnames(mspc)[2], ")", sep = "")) +
+        theme_minimal() +
+        theme(legend.position = "none")
+    }
+    
+    if (trans == "log2") {
+      
+      logm <- log2(mspc + 0.01)
+      mxx <- max(logm[, 1])
+      mxy <- max(logm[, 2])
+      mx <- max(mxx, mxy)
+      
+      s_mspc <- logm[fl ,]
+      
+      p <- ggplot(logm, aes(logm[,1], logm[,2])) +
+        geom_point() +
+        geom_point(s_mspc, mapping = aes(x = s_mspc[,1], y = s_mspc[,2], color = "red")) +
+        geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray") +
+        geom_abline(intercept = log2(2), slope = 1, linetype = "dashed", color = "navy") +
+        geom_abline(intercept = -log2(2), slope = 1, linetype = "dashed", color = "navy") +
+        xlab(paste("log2(mean SpC(", colnames(mspc)[1], "))", sep = "")) +
+        ylab(paste("log2(mean SpC(", colnames(mspc)[2], "))", sep = "")) +
+        theme_minimal() +
+        theme(legend.position = "none")
+    }
+    
+    return(p)
+  }
   
-  + **`r nrow(homo[homo$pval > 0.05,])`** out of your **`r nrow(homo)`** variables (**`r percent.homo`%**) have homosedasticity before log transformation. 
-  
-# Variable Distribution
-
-# Boxplots
-
-
-
-  
-# Density plots
-
-
-
-
+spc_scatterplot(spcm2, target$Treatment, trans = "sqrt", minSpC = 2, minLFC = 2)
+```
 
