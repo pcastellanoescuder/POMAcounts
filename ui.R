@@ -52,7 +52,7 @@ dashboardPage(skin = "blue",
 
     ## FOOTER
 
-    tags$footer(p(h5(("Pol Castellano Escuder"), align="center",width=3),
+    tags$footer(p(h5(("Pol Castellano Escuder and Alex Sánchez Pla"), align="center",width=3),
               p(("Statistics and Bioinformatics Research Group"),"and", align="center",width=3),
               p(("Biomarkers and Nutritional & Food Metabolomics Research Group"),"from",
                 align="center", width=3),

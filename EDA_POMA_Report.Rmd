@@ -33,8 +33,8 @@ target <- params$t
 
 # data <- read.table("/Users/pol/Dropbox/JosepVillanueva/231eribulin-counts.txt", header = T, sep = "\t")
 # target <- read.table("/Users/pol/Dropbox/JosepVillanueva/231eribulin-samples.txt", header = T, sep = "\t")
-data <- read.table("/home/pol/Escritorio/R problems/231eribulin-counts.txt", header = T, sep = "\t")
-target <- read.table("/home/pol/Escritorio/R problems/231eribulin-samples.txt", header = T, sep = "\t")
+# data <- read.table("/home/pol/Escritorio/R problems/231eribulin-counts.txt", header = T, sep = "\t")
+# target <- read.table("/home/pol/Escritorio/R problems/231eribulin-samples.txt", header = T, sep = "\t")
 ```
  
 ```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
