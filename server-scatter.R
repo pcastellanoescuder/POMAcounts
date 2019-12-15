@@ -26,7 +26,7 @@ Scatterplot <- reactive({
   
   ###
   
-  spcm2 <- batch.neutralize(counts, target$Batch, half = TRUE, sqrt.trans = TRUE)
+  spcm2 <- batch_neutralize(counts, target$Batch, half = TRUE, sqrt.trans = TRUE)
   
   spc_scatterplot <- function(counts, treat, trans = "log2", minSpC = 2, minLFC = 1){
     

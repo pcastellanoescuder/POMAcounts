@@ -27,7 +27,7 @@ Densityplot <- reactive({
   
   ###
   
-  spcm2 <- batch.neutralize(counts, target$Batch, half = TRUE, sqrt.trans = TRUE)
+  spcm2 <- batch_neutralize(counts, target$Batch, half = TRUE, sqrt.trans = TRUE)
   
   total <- as.data.frame(t(spcm2))
   colnames(total) <- prot_names
