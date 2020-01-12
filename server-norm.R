@@ -1,56 +1,60 @@
 
 Normplot <- reactive({
   
-  proteines <- proteinesInput()
-  target <- targetInput()
-  
-  colnames(target) <- c("Sample", "Treatment", "Batch")
-  
-  rownames(proteines) <- proteines$Accession
-  remove <- ncol(proteines) - nrow(target)
-  proteines <- proteines[, -c(1:remove)]
-  
-  prot_names <- rownames(proteines)
-  counts <- apply(proteines, 2, function(x) as.numeric(as.character(x)))
-  
-  ## PRE-PROCESSING (pp.msms.data)
-  
-  if (sum(is.na(counts))) {
-    counts[is.na(counts)] <- 0
-  }
-  
-  fl1 <- apply(counts, 1, function(x) sum(x) > 0)
-  
-  fl2 <- substring(prot_names, nchar(prot_names) - 1) == "-R"
-  flags <- (!fl2 & fl1)
-  counts <- counts[flags, ]
+  e <- Barplot()$e
+  target <- pData(e)
   
   ###
+
+  total <- as.data.frame(t(exprs(e)))
+  total <- cbind(Sample = rownames(target), Treatment = target$Treatment, total)
   
-  spcm2 <- batch_neutralize(counts, target$Batch, half = TRUE, sqrt.trans = TRUE)
+  ### NOT NORMALIZED
   
-  total <- as.data.frame(t(spcm2))
-  colnames(total) <- prot_names
+  normtable_subjects <- total %>% reshape2::melt() %>%
+    filter(value >= input$minSpC)
+
+  normplot1 <- normtable_subjects %>%
+    ggplot(aes(Sample, log2(value), color = Treatment)) +
+    geom_jitter() +
+    geom_boxplot(color = "black", outlier.colour = NA) +
+    theme(legend.position = "none") +
+    theme_minimal() +
+    xlab("") +
+    ggtitle("Not Normalized") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          legend.position = "top") +
+    scale_color_brewer(palette = "Dark2")
   
-  total <- cbind(target[, 1:2], total)
-  colnames(total)[1:2] <- c("Sample", "Group")
+  #### NORMALIZED
   
-  ### NORMALIZATION
+  neutralized <- batch.neutralize(exprs(e), target$Batch, half = TRUE, sqrt.trans = TRUE)
   
-  normtable_subjects <- total %>% reshape2::melt()
+  total2 <- as.data.frame(t(neutralized))
+  total2 <- cbind(Sample = rownames(target), Treatment = target$Treatment, total2)
   
-  normplot <- normtable_subjects %>% 
-    ggplot(aes(Sample, log2(value + 1), color = Group)) + 
+  normtable_subjects2 <- total2 %>% reshape2::melt()
+  normtable_subjects3 <- normtable_subjects2 %>%
+    filter(value >= input$minSpC)
+  
+  normplot2 <- normtable_subjects3 %>% 
+    ggplot(aes(Sample, log2(value), color = Treatment)) + 
     geom_jitter() + 
     geom_boxplot(color = "black", outlier.colour = NA) + 
     theme(legend.position = "none") + 
     theme_minimal() + 
     xlab("") +
+    ggtitle("Normalized") +
     theme(axis.text.x = element_text(angle = 45, hjust = 1), 
-          legend.position = "top") +
+          legend.position = "none") +
     scale_color_brewer(palette = "Dark2")
-
-return(list(normplot = normplot))
+  
+  #### ARRANGE
+  
+  normplot <- normplot1/normplot2
+  
+  return(list(normplot = normplot, normtable_subjects2 = normtable_subjects2,
+              neutralized = neutralized))
 
 })
 

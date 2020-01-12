@@ -4,7 +4,6 @@ getOption("repos")
 
 source("helpers.R")
 source("themes.R")
-source("extra_functions.R")
 
 dashboardPage(skin = "blue",
               

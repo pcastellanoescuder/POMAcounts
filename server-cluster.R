@@ -1,34 +1,18 @@
 
 Clusterplot <- reactive({
   
-  total <- Densityplot()$total
-  target <- targetInput()
+  e <- Barplot()$e
+  neutralized <- Normplot()$neutralized
   
-  dend1 <- total[, 3:ncol(total)] %>% 
-    dist %>% 
-    hclust 
-  order <- dend1$order
-  target2 <- target[order, ]
-  my_group <- as.numeric(as.factor(target2$Treatment))
-  colSide <- brewer.pal(8, "Dark2")[my_group]
+  data2 <- MSnSet(exprs = neutralized, pData = pData(e))
   
-  dend1 <- dend1 %>%
-    as.dendrogram() %>%
-    set("labels_colors", colSide)
+  # treatment
+  
+  dend1 <- counts.hc(data2, facs = pData(data2)[, "Treatment", drop = FALSE])
   
   # batch
   
-  dend2 <- total[, 3:ncol(total)] %>% 
-    dist %>% 
-    hclust 
-  order <- dend2$order
-  target2 <- target[order, ]
-  my_group <- as.numeric(as.factor(target2$Batch))
-  colSide <- brewer.pal(8, "Dark2")[my_group]
-  
-  dend2 <- dend2 %>%
-    as.dendrogram() %>%
-    set("labels_colors", colSide)
+  dend2 <- counts.hc(data2, facs = pData(data2)[, "Batch", drop = FALSE])
   
   return(list(dend1 = dend1, dend2 = dend2))
 
@@ -37,13 +21,19 @@ Clusterplot <- reactive({
 ####
 
 output$cluster_groups <- renderPlot({
-  Clusterplot()$dend1 %>%
-    plot()
+  e <- Barplot()$e
+  neutralized <- Normplot()$neutralized
+  data2 <- MSnSet(exprs = neutralized, pData = pData(e))
+  # treatment
+  counts.hc(data2, facs = pData(data2)[, "Treatment", drop = FALSE])
 })
 
 output$cluster_batch <- renderPlot({
-  Clusterplot()$dend2 %>%
-    plot()
+  e <- Barplot()$e
+  neutralized <- Normplot()$neutralized
+  data2 <- MSnSet(exprs = neutralized, pData = pData(e))
+  # batch
+  counts.hc(data2, facs = pData(data2)[, "Batch", drop = FALSE])
 })
 
 output$download_plot5 <- downloadHandler(
@@ -54,8 +44,7 @@ output$download_plot5 <- downloadHandler(
   content = function(file) {
     pdf(file) # open the pdf device
     
-    print(Clusterplot()$dend1 %>%
-            plot()) # for GGPLOT
+    print(Clusterplot()$dend1) # for GGPLOT
     dev.off()  # turn the device off
     
   }) 
@@ -68,8 +57,7 @@ output$download_plot6 <- downloadHandler(
   content = function(file) {
     pdf(file) # open the pdf device
     
-    print(Clusterplot()$dend2 %>%
-            plot()) # for GGPLOT
+    print(Clusterplot()$dend2) # for GGPLOT
     dev.off()  # turn the device off
     
   }) 

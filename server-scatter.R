@@ -1,32 +1,12 @@
 
 Scatterplot <- reactive({
   
-  proteines <- proteinesInput()
-  target <- targetInput()
-  colnames(target) <- c("Sample", "Treatment", "Batch")
-  
-  rownames(proteines) <- proteines$Accession
-  remove <- ncol(proteines) - nrow(target)
-  proteines <- proteines[, -c(1:remove)]
-  
-  prot_names <- rownames(proteines)
-  counts <- apply(proteines, 2, function(x) as.numeric(as.character(x)))
-  
-  ## PRE-PROCESSING (pp.msms.data)
-  
-  if (sum(is.na(counts))) {
-    counts[is.na(counts)] <- 0
-  }
-  
-  fl1 <- apply(counts, 1, function(x) sum(x) > 0)
-  
-  fl2 <- substring(prot_names, nchar(prot_names) - 1) == "-R"
-  flags <- (!fl2 & fl1)
-  counts <- counts[flags, ]
+  e <- Barplot()$e
+  target <- pData(e)
   
   ###
   
-  spcm2 <- batch_neutralize(counts, target$Batch, half = TRUE, sqrt.trans = TRUE)
+  spcm2 <- batch.neutralize(exprs(e), target$Batch, half = TRUE, sqrt.trans = TRUE)
   
   spc_scatterplot <- function(counts, treat, trans = "log2", minSpC = 2, minLFC = 1){
     
@@ -94,7 +74,9 @@ Scatterplot <- reactive({
     return(p)
   }
   
-  scatter <- spc_scatterplot(spcm2, target$Treatment, trans = input$trans, minSpC = input$minSpC, minLFC = input$minLFC)
+  scatter <- spc_scatterplot(spcm2, target$Treatment, 
+                             trans = input$trans, minSpC = input$minSpC, 
+                             minLFC = input$minLFC)
     
   return(list(scatter = scatter))
   
