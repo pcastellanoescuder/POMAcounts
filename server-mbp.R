@@ -5,6 +5,7 @@ Barplot <- reactive({
   target <- targetInput()
   
   colnames(target) <- c("Sample", "Treatment", "Batch")
+  colnames(proteines)[2] <- "Accession"
   
   target <- column_to_rownames(target, "Sample")
   proteines <- column_to_rownames(proteines, "Accession") 
@@ -14,19 +15,19 @@ Barplot <- reactive({
   
   ## PRE-PROCESSING (pp.msms.data)
   
-  e <- pp.msms.data(data)
+  raw <- pp.msms.data(data)
   
-  ### BARPLOT - SCALE TO THE MEDIAN
+  ### BARPLOT - SCALE TO THE MEDIAN RAW
   
-  counts <- Biobase::exprs(e)
+  counts <- Biobase::exprs(raw)
   
   tcnts <- apply(counts, 2, sum)
   medt <- median(tcnts)
-  div <- data.frame(median = tcnts/medt)
+  div <- data.frame(median = tcnts/medt) 
   div$sample <- rownames(div)
   div$Treatment <- target$Treatment
   
-  barplot <- ggplot(div, aes(x = sample, y = median, fill = Treatment)) +
+  barplot1 <- ggplot(div, aes(x = sample, y = median, fill = Treatment)) +
     geom_bar(stat="identity")+
     theme_minimal() +
     xlab("") +
@@ -35,26 +36,92 @@ Barplot <- reactive({
     theme(axis.text.x = element_text(angle = 45, hjust = 1),
           legend.position = "top")
   
-  return(list(barplot = barplot, e = e))
+  ### BARPLOT - SCALE TO THE MEDIAN NORMALIZED
+  
+  counts <- Biobase::exprs(raw)
+  
+  tspc <- apply(counts, 2, sum)
+  div <- tspc/median(tspc)
+  norm <- norm.counts(raw, div)
+  
+  ##
+  
+  counts <- Biobase::exprs(norm)
+  
+  tcnts <- apply(counts, 2, sum)
+  medt <- median(tcnts)
+  div <- data.frame(median = tcnts/medt) 
+  div$sample <- rownames(div)
+  div$Treatment <- target$Treatment
+  
+  ##
+  
+  barplot2 <- ggplot(div, aes(x = sample, y = median, fill = Treatment)) +
+    geom_bar(stat="identity")+
+    theme_minimal() +
+    xlab("") +
+    geom_hline(yintercept = 1, linetype = "dashed") +
+    scale_fill_brewer(palette = "Dark2") + 
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          legend.position = "top")
+  
+  ### BARPLOT - SCALE TO THE MEDIAN CORRECTED
+  
+  target <- pData(norm)
+  neutralized <- batch.neutralize(exprs(norm), target$Batch, half = TRUE, sqrt.trans = TRUE)
+  
+  corrected <- MSnSet(exprs = as.matrix(neutralized), pData = pData(norm))
+  
+  ##
+  
+  counts <- Biobase::exprs(corrected)
+  
+  tcnts <- apply(counts, 2, sum)
+  medt <- median(tcnts)
+  div <- data.frame(median = tcnts/medt) 
+  div$sample <- rownames(div)
+  div$Treatment <- target$Treatment
+  
+  ##
+  
+  barplot3 <- ggplot(div, aes(x = sample, y = median, fill = Treatment)) +
+    geom_bar(stat="identity")+
+    theme_minimal() +
+    xlab("") +
+    geom_hline(yintercept = 1, linetype = "dashed") +
+    scale_fill_brewer(palette = "Dark2") + 
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          legend.position = "top")
+  
+  return(list(barplot1 = barplot1, barplot2 = barplot2, barplot3 = barplot3, 
+              raw = raw, norm = norm, corrected = corrected))
 
 })
 
 ####
 
-output$barplot <- renderPlot({
-  Barplot()$barplot
+output$barplot1 <- renderPlot({
+  Barplot()$barplot1
 })
 
-output$download_plot <- downloadHandler(
-  filename =  function() {
-    paste0("BarPlot_", Sys.Date())
-  },
-  # content is a function with argument file. content writes the plot to the device
-  content = function(file) {
-    pdf(file) # open the pdf device
-    
-    print(Barplot()$barplot) # for GGPLOT
-    dev.off()  # turn the device off
-    
-  }) 
+output$barplot2 <- renderPlot({
+  Barplot()$barplot2
+})
+
+output$barplot3 <- renderPlot({
+  Barplot()$barplot3
+})
+
+# output$download_plot <- downloadHandler(
+#   filename =  function() {
+#     paste0("BarPlot_", Sys.Date())
+#   },
+#   # content is a function with argument file. content writes the plot to the device
+#   content = function(file) {
+#     pdf(file) # open the pdf device
+#     
+#     print(Barplot()$barplot) # for GGPLOT
+#     dev.off()  # turn the device off
+#     
+#   }) 
 

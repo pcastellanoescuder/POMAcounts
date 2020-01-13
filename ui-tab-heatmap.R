@@ -1,9 +1,20 @@
 
-fluidPage(
+fluidPage(tabsetPanel(
   
-  downloadButton("download_plot7", "Download Plot"),
+  tabPanel("Raw Data", 
+           # downloadButton("download_plot", "Download Plot"),
+           plotOutput("heatmap1", height = "600px")),
   
-  plotOutput("heatmap", height = "600px")
-
-)
-
+  tabPanel("Normalized", 
+           # downloadButton("download_plot12", "Download Plot"),
+           plotOutput("heatmap2", height = "600px")),
+  
+  tabPanel("Normalized and Batch Corrected", 
+           # downloadButton("download_plot13", "Download Plot"),
+           plotOutput("heatmap3", height = "600px")),
+  
+  tabPanel("Normalized and Batch Corrected Expanded Heatmap", 
+           # downloadButton("download_plot13", "Download Plot"),
+           plotOutput("expanded_heatmap", height = "1000px"))
+  
+))

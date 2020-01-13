@@ -1,12 +1,10 @@
 
 Scatterplot <- reactive({
   
-  e <- Barplot()$e
-  target <- pData(e)
+  corrected <- Barplot()$corrected
+  target <- pData(corrected)
   
   ###
-  
-  spcm2 <- batch.neutralize(exprs(e), target$Batch, half = TRUE, sqrt.trans = TRUE)
   
   spc_scatterplot <- function(counts, treat, trans = "log2", minSpC = 2, minLFC = 1){
     
@@ -29,6 +27,7 @@ Scatterplot <- reactive({
         xlab(paste("mean SpC(", colnames(mspc)[1], ")", sep = "")) +
         ylab(paste("mean SpC(", colnames(mspc)[2], ")", sep = "")) +
         theme_minimal() +
+        ggtitle("Normalized and Batch Corrected") +
         theme(legend.position = "none")
     }
     
@@ -47,6 +46,7 @@ Scatterplot <- reactive({
         xlab(paste("root mean SpC(", colnames(mspc)[1], ")", sep = "")) +
         ylab(paste("root mean SpC(", colnames(mspc)[2], ")", sep = "")) +
         theme_minimal() +
+        ggtitle("Normalized and Batch Corrected") +
         theme(legend.position = "none")
     }
     
@@ -68,13 +68,14 @@ Scatterplot <- reactive({
         xlab(paste("log2(mean SpC(", colnames(mspc)[1], "))", sep = "")) +
         ylab(paste("log2(mean SpC(", colnames(mspc)[2], "))", sep = "")) +
         theme_minimal() +
+        ggtitle("Normalized and Batch Corrected") +
         theme(legend.position = "none")
     }
     
     return(p)
   }
   
-  scatter <- spc_scatterplot(spcm2, target$Treatment, 
+  scatter <- spc_scatterplot(exprs(corrected), target$Treatment, 
                              trans = input$trans, minSpC = input$minSpC, 
                              minLFC = input$minLFC)
     
@@ -88,16 +89,16 @@ output$scatter <- renderPlot({
   Scatterplot()$scatter
 })
 
-output$download_plot8 <- downloadHandler(
-  filename =  function() {
-    paste0("ImportantFeatures_", Sys.Date())
-  },
-  # content is a function with argument file. content writes the plot to the device
-  content = function(file) {
-    pdf(file) # open the pdf device
-    
-    print(Scatterplot()$scatter) # for GGPLOT
-    dev.off()  # turn the device off
-    
-  }) 
+# output$download_plot8 <- downloadHandler(
+#   filename =  function() {
+#     paste0("ImportantFeatures_", Sys.Date())
+#   },
+#   # content is a function with argument file. content writes the plot to the device
+#   content = function(file) {
+#     pdf(file) # open the pdf device
+#     
+#     print(Scatterplot()$scatter) # for GGPLOT
+#     dev.off()  # turn the device off
+#     
+#   }) 
 

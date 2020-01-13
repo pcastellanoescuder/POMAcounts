@@ -9,8 +9,21 @@ fluidPage(column(width = 3,
 
 column(width = 9,
        
-       downloadButton("download_plot2", "Download Plot"),
-       
-       plotOutput("normplot", height = "800px")
+       tabsetPanel(
+               
+               tabPanel("Raw Data", 
+                        # downloadButton("download_plot", "Download Plot"),
+                        plotOutput("normplot1")),
+               
+               tabPanel("Normalized", 
+                        # downloadButton("download_plot12", "Download Plot"),
+                        plotOutput("normplot2")),
+               
+               tabPanel("Normalized and Batch Corrected", 
+                        # downloadButton("download_plot13", "Download Plot"),
+                        plotOutput("normplot3"))
+               
+       )
        
 ))
+

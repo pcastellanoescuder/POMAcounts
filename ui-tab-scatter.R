@@ -17,7 +17,7 @@ fluidPage(column(width = 3,
           
           column(width = 9,
                  
-                 downloadButton("download_plot8", "Download Plot"),
+                 # downloadButton("download_plot8", "Download Plot"),
                  
                  plotOutput("scatter")
                  
