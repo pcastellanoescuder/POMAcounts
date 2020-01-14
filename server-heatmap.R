@@ -50,19 +50,6 @@ output$heatmap3 <- renderPlot({
   
 })
 
-output$expanded_heatmap <- renderPlot({
-  
-  corrected <- Barplot()$corrected
-  
-  ####
-  
-  total <- exprs(corrected)
-  target <- pData(corrected)
-  
-  heatmap.2(total)
-  
-})
-
 # output$download_plot7 <- downloadHandler(
 #   filename =  function() {
 #     paste0("Heatmap_", Sys.Date())

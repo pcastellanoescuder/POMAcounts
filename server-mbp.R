@@ -112,16 +112,42 @@ output$barplot3 <- renderPlot({
   Barplot()$barplot3
 })
 
-# output$download_plot <- downloadHandler(
+# output$download_plot1 <- downloadHandler(
 #   filename =  function() {
-#     paste0("BarPlot_", Sys.Date())
+#     paste0("raw_barplot_", Sys.Date())
+#   },
+#   # content is a function with argument file. content writes the plot to the device
+#   content = function(file) {
+#     pdf(file) # open the pdf device
+# 
+#     print(Barplot()$barplot1) # for GGPLOT
+#     dev.off()  # turn the device off
+# 
+#   })
+# 
+# output$download_plot2 <- downloadHandler(
+#   filename =  function() {
+#     paste0("normalized_barplot_", Sys.Date())
 #   },
 #   # content is a function with argument file. content writes the plot to the device
 #   content = function(file) {
 #     pdf(file) # open the pdf device
 #     
-#     print(Barplot()$barplot) # for GGPLOT
+#     print(Barplot()$barplot2) # for GGPLOT
 #     dev.off()  # turn the device off
 #     
-#   }) 
+#   })
+# 
+# output$download_plot3 <- downloadHandler(
+#   filename =  function() {
+#     paste0("normalized_corrected_barplot_", Sys.Date())
+#   },
+#   # content is a function with argument file. content writes the plot to the device
+#   content = function(file) {
+#     pdf(file) # open the pdf device
+#     
+#     print(Barplot()$barplot3) # for GGPLOT
+#     dev.off()  # turn the device off
+#     
+#   })
 

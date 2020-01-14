@@ -2,14 +2,15 @@
 title: "POMA: Statistical analysis tool for omics data"
 subtitle: "Exploratory Data Analysis Report"
 date: '`r format(Sys.Date(), "%B, %Y")`'
-output:
-  prettydoc::html_pretty:
+output: 
+  pdf_document:
     toc: true
-    theme: cayman
-    highlight: github
+    toc_depth: 3
+    number_sections: true
 params:
-  n: NA
-  t: NA
+  raw: NA
+  norm: NA
+  corrected: NA
 ---
 
 ```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
@@ -28,85 +29,47 @@ params:
 # You should have received a copy of the GNU General Public License
 # along with POMA. If not, see <https://www.gnu.org/licenses/>.
 
-data <- params$n
-target <- params$t
-
-# data <- read.table("/Users/pol/Dropbox/JosepVillanueva/231eribulin-counts.txt", header = T, sep = "\t")
-# target <- read.table("/Users/pol/Dropbox/JosepVillanueva/231eribulin-samples.txt", header = T, sep = "\t")
-# data <- read.table("/home/pol/Escritorio/R problems/231eribulin-counts.txt", header = T, sep = "\t")
-# target <- read.table("/home/pol/Escritorio/R problems/231eribulin-samples.txt", header = T, sep = "\t")
-```
- 
-```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
-colnames(target) <- c("Sample", "Group", "Batch")
-
-prot_names <- data$Accession
-remove <- ncol(data) - nrow(target)
-data <- data[, -c(1:remove)]
-# counts <- apply(data, 2, function(x) as.numeric(as.character(x)))
-data <- data.frame(t(data))
-colnames(data) <- prot_names
+raw <- params$raw
+norm <- params$norm
+corrected <- params$corrected
 ```
 
 # Summary
 
-  + Your data has **`r nrow(target)`** subjects, **`r ncol(data)`** proteines and **`r length(table(target$Group))`** groups, that are **`r noquote(paste(shQuote(levels(as.factor(target$Group))), collapse=", "))`**.    
-
-  + A **`r round(sum(is.na(data))/(nrow(data)*(ncol(data)))*100, 2)`%** of the values in your data are NAs (missing values). 
-
-## Subject count by Groups
+## Raw Data
 
 ```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
-library(ggplot2)
-library(reshape)
-
-counts <- data.frame(table(target$Group))
-colnames(counts) <- c("Group", "Counts")
-
-ggplot(counts, aes(Group, Counts, fill = Group)) +
-  geom_bar(stat="identity") +
-  theme_minimal() +
-  scale_fill_brewer(palette = "Dark2")
+raw
 ```
-  
-# Barplot scaled to the median
+
+## Normalized Data
 
 ```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
-proteines <- params$n
-target <- params$t
+norm
+```
 
-### 
+## Normalized and Batch Corrected Data
 
-colnames(target) <- c("Sample", "Treatment", "Batch")
+```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
+corrected
+```
 
-rownames(proteines) <- proteines$Accession
-remove <- ncol(proteines) - nrow(target)
-proteines <- proteines[, -c(1:remove)]
+# Median Bar Plot
 
-prot_names <- rownames(proteines)
-counts <- apply(proteines, 2, function(x) as.numeric(as.character(x)))
+## Raw
 
-## PRE-PROCESSING (pp.msms.data)
-
-if (sum(is.na(counts))) {
-  counts[is.na(counts)] <- 0
-}
-
-fl1 <- apply(counts, 1, function(x) sum(x) > 0)
-
-fl2 <- substring(prot_names, nchar(prot_names) - 1) == "-R"
-flags <- (!fl2 & fl1)
-counts <- counts[flags, ]
-
-###
+```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
+### BARPLOT - SCALE TO THE MEDIAN RAW
+  
+counts <- Biobase::exprs(raw)
 
 tcnts <- apply(counts, 2, sum)
 medt <- median(tcnts)
-div <- data.frame(median = tcnts/medt)
+div <- data.frame(median = tcnts/medt) 
 div$sample <- rownames(div)
-div$Group <- target$Treatment
+div$Treatment <- target$Treatment
 
-ggplot(div, aes(x = sample, y = median, fill = Group)) +
+ggplot(div, aes(x = sample, y = median, fill = Treatment)) +
   geom_bar(stat="identity")+
   theme_minimal() +
   xlab("") +
@@ -114,29 +77,105 @@ ggplot(div, aes(x = sample, y = median, fill = Group)) +
   scale_fill_brewer(palette = "Dark2") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         legend.position = "top")
-
 ```
 
-# Normalization plot
+## Normalized
 
 ```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
-spcm2 <- batch.neutralize(counts, target$Batch, half = TRUE, sqrt.trans = TRUE)
+### BARPLOT - SCALE TO THE MEDIAN NORMALIZED
 
-total <- as.data.frame(t(spcm2))
-colnames(total) <- prot_names
+counts <- Biobase::exprs(norm)
 
-total <- cbind(target[, 1:2], total)
-colnames(total)[1:2] <- c("Sample", "Group")
+tcnts <- apply(counts, 2, sum)
+medt <- median(tcnts)
+div <- data.frame(median = tcnts/medt) 
+div$sample <- rownames(div)
+div$Treatment <- target$Treatment
 
-### NORMALIZATION
+##
 
-normtable_subjects <- total %>% reshape2::melt()
+ggplot(div, aes(x = sample, y = median, fill = Treatment)) +
+  geom_bar(stat="identity")+
+  theme_minimal() +
+  xlab("") +
+  geom_hline(yintercept = 1, linetype = "dashed") +
+  scale_fill_brewer(palette = "Dark2") + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top")
+```
 
-normtable_subjects %>% 
-  ggplot(aes(Sample, log2(value + 1), color = Group)) + 
+## Normalized and Batch Corrected
+
+```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
+### BARPLOT - SCALE TO THE MEDIAN CORRECTED
+
+counts <- Biobase::exprs(corrected)
+
+tcnts <- apply(counts, 2, sum)
+medt <- median(tcnts)
+div <- data.frame(median = tcnts/medt) 
+div$sample <- rownames(div)
+div$Treatment <- target$Treatment
+
+##
+
+ggplot(div, aes(x = sample, y = median, fill = Treatment)) +
+  geom_bar(stat="identity")+
+  theme_minimal() +
+  xlab("") +
+  geom_hline(yintercept = 1, linetype = "dashed") +
+  scale_fill_brewer(palette = "Dark2") + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top")
+```
+
+# Normalization Boxplots
+
+## Raw
+
+```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
+#### RAW
+
+target <- pData(raw)
+total <- as.data.frame(t(exprs(raw)))
+total <- cbind(Sample = rownames(target), Treatment = target$Treatment, total)
+
+normtable_subjectsX <- total %>% reshape2::melt()
+
+normtable_subjects1 <- normtable_subjectsX %>%
+  filter(value >= 2)
+
+normtable_subjects1 %>%
+  ggplot(aes(Sample, log2(value), color = Treatment)) +
+  geom_jitter() +
+  geom_boxplot(color = "black", outlier.colour = NA) +
+  theme(legend.position = "none") +
+  theme_minimal() +
+  xlab("") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top") +
+  scale_color_brewer(palette = "Dark2")
+```
+
+## Normalized
+
+```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
+#### NORMALIZED
+
+target <- pData(norm)
+total2 <- as.data.frame(t(exprs(norm)))
+total2 <- cbind(Sample = rownames(target), Treatment = target$Treatment, total2)
+
+normtable_subjectsXX <- total2 %>% reshape2::melt()
+
+normtable_subjects2 <- normtable_subjectsXX %>%
+  filter(value >= 2)
+
+normtable_subjects2 %>% 
+  ggplot(aes(Sample, log2(value), color = Treatment)) + 
   geom_jitter() + 
   geom_boxplot(color = "black", outlier.colour = NA) + 
-  theme(legend.position = "none") + 
+  theme(legend.position = "top") + 
   theme_minimal() + 
   xlab("") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1), 
@@ -144,145 +183,296 @@ normtable_subjects %>%
   scale_color_brewer(palette = "Dark2")
 ```
 
-# Density plot
+## Normalized and Batch Corrected
 
 ```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
-normtable_subjects %>% 
+#### CORRECTED
+
+target <- pData(corrected)
+total3 <- as.data.frame(t(exprs(corrected)))
+total3 <- cbind(Sample = rownames(target), Treatment = target$Treatment, total3)
+
+normtable_subjectsXXX <- total3 %>% reshape2::melt()
+
+normtable_subjects3 <- normtable_subjectsXXX %>%
+  filter(value >= 2)
+
+normtable_subjects3 %>% 
+  ggplot(aes(Sample, log2(value), color = Treatment)) + 
+  geom_jitter() + 
+  geom_boxplot(color = "black", outlier.colour = NA) + 
+  theme(legend.position = "top") + 
+  theme_minimal() + 
+  xlab("") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+        legend.position = "top") +
+  scale_color_brewer(palette = "Dark2")
+```
+
+# Density Plots
+
+## Raw
+
+```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
+#### RAW
+
+normtable_subjectsX %>% 
   ggplot(aes(x = value)) +
-  geom_density(aes(group = Sample, color = Group), alpha = 0.4) +
+  geom_density(aes(group = Sample, color = Treatment), alpha = 0.4) +
   theme_minimal() +
   theme(legend.position = "top") +
-  scale_color_brewer(palette = "Dark2")
+  scale_color_brewer(palette = "Dark2") +
+  xlim(0, 30)
+```
+
+## Normalized
+
+```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
+#### NORMALIZED
+
+normtable_subjectsXX %>% 
+  ggplot(aes(x = value)) +
+  geom_density(aes(group = Sample, color = Treatment), alpha = 0.4) +
+  theme_minimal() +
+  theme(legend.position = "top") +
+  scale_color_brewer(palette = "Dark2") +
+  xlim(0, 30)
+```
+
+## Normalized and Batch Corrected
+
+```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
+#### CORRECTED
+
+normtable_subjectsXXX %>% 
+  ggplot(aes(x = value)) +
+  geom_density(aes(group = Sample, color = Treatment), alpha = 0.4) +
+  theme_minimal() +
+  theme(legend.position = "top") +
+  scale_color_brewer(palette = "Dark2") +
+  xlim(0, 30)
 ```
 
 # Principal Component Analysis
 
-```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
-res_pca1 <- mixOmics::pca(total[, 3:ncol(total)])
-res_pca <- cbind(target, res_pca1$x)
+## Raw
 
+```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
+#### RAW
+
+res_pca1 <- mixOmics::pca(t(exprs(raw)))
+res_pca <- cbind(pData(raw), res_pca1$x)
+  
 ggplot(res_pca, aes(PC1, PC2, color = Treatment, shape = Batch)) +
   geom_point(size = 3, alpha = 0.8) +
-  ggrepel::geom_label_repel(aes(label = Sample), show.legend = F) +
+  ggrepel::geom_label_repel(aes(label = rownames(res_pca)), show.legend = F) +
   theme_minimal() +
   xlab(paste0("PC1 (", round(100*(res_pca1$explained_variance)[1], 2), "%)")) +
   ylab(paste0("PC2 (", round(100*(res_pca1$explained_variance)[2], 2), "%)")) +
   scale_color_brewer(palette = "Dark2")
 ```
 
-# Cluster by Group
+## Normalized
 
 ```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
-dend1 <- total[, 3:ncol(total)] %>% 
-  dist %>% 
-  hclust 
-order <- dend1$order
-target2 <- target[order, ]
-my_group <- as.numeric(as.factor(target2$Treatment))
-colSide <- brewer.pal(8, "Dark2")[my_group]
+#### NORMALIZED
 
-dend1 <- dend1 %>%
-  as.dendrogram() %>%
-  set("labels_colors", colSide) %>%
-plot()
+res_pca1 <- mixOmics::pca(t(exprs(norm)))
+res_pca <- cbind(pData(norm), res_pca1$x)
+  
+ggplot(res_pca, aes(PC1, PC2, color = Treatment, shape = Batch)) +
+  geom_point(size = 3, alpha = 0.8) +
+  ggrepel::geom_label_repel(aes(label = rownames(res_pca)), show.legend = F) +
+  theme_minimal() +
+  xlab(paste0("PC1 (", round(100*(res_pca1$explained_variance)[1], 2), "%)")) +
+  ylab(paste0("PC2 (", round(100*(res_pca1$explained_variance)[2], 2), "%)")) +
+  scale_color_brewer(palette = "Dark2")
 ```
 
-# Cluster by Batch
+## Normalized and Batch Corrected
 
 ```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
-dend2 <- total[, 3:ncol(total)] %>% 
-  dist %>% 
-  hclust 
-order <- dend2$order
-target2 <- target[order, ]
-my_group <- as.numeric(as.factor(target2$Batch))
-colSide <- brewer.pal(8, "Dark2")[my_group]
+#### CORRECTED
 
-dend2 <- dend2 %>%
-  as.dendrogram() %>%
-  set("labels_colors", colSide) %>%
-  plot()
+res_pca1 <- mixOmics::pca(t(exprs(corrected)))
+res_pca <- cbind(pData(corrected), res_pca1$x)
+  
+ggplot(res_pca, aes(PC1, PC2, color = Treatment, shape = Batch)) +
+  geom_point(size = 3, alpha = 0.8) +
+  ggrepel::geom_label_repel(aes(label = rownames(res_pca)), show.legend = F) +
+  theme_minimal() +
+  xlab(paste0("PC1 (", round(100*(res_pca1$explained_variance)[1], 2), "%)")) +
+  ylab(paste0("PC2 (", round(100*(res_pca1$explained_variance)[2], 2), "%)")) +
+  scale_color_brewer(palette = "Dark2")
+```
+
+# Hierarchical Clustering
+
+## Raw
+
+### By Treatment
+
+```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
+counts.hc(raw, facs = pData(raw)[, "Treatment", drop = FALSE])
+```
+
+### By Batch
+
+```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
+counts.hc(raw, facs = pData(raw)[, "Batch", drop = FALSE])
+```
+
+## Normalized
+
+### By Treatment
+
+```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
+counts.hc(norm, facs = pData(norm)[, "Treatment", drop = FALSE])
+```
+
+### By Batch
+
+```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
+counts.hc(norm, facs = pData(norm)[, "Batch", drop = FALSE])
+```
+
+## Normalized and Batch Corrected
+
+### By Treatment
+
+```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
+counts.hc(corrected, facs = pData(corrected)[, "Treatment", drop = FALSE])
+```
+
+### By Batch
+
+```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
+counts.hc(corrected, facs = pData(corrected)[, "Batch", drop = FALSE])
 ```
 
 # Heatmap
 
+## Raw
+
 ```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
+#### RAW
+
+total <- exprs(raw)
+target <- pData(raw)
+
 my_group <- as.numeric(as.factor(target$Treatment))
 colSide <- brewer.pal(8, "Dark2")[my_group]
 colMain <- colorRampPalette( c("green", "black", "red"), space = "rgb")(64)
 
-heatmap(t(total[, 3:ncol(total)]), ColSideColors = colSide, col = colMain, labRow = NA)
+heatmap(total, ColSideColors = colSide, col = colMain, labRow = NA)
+```
+
+## Normalized
+
+```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
+#### NORMALIZED
+
+total <- exprs(norm)
+target <- pData(norm)
+
+my_group <- as.numeric(as.factor(target$Treatment))
+colSide <- brewer.pal(8, "Dark2")[my_group]
+colMain <- colorRampPalette( c("green", "black", "red"), space = "rgb")(64)
+
+heatmap(total, ColSideColors = colSide, col = colMain, labRow = NA)
+```
+
+## Normalized and Batch Corrected
+
+```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
+#### CORRECTED
+
+total <- exprs(corrected)
+target <- pData(corrected)
+
+my_group <- as.numeric(as.factor(target$Treatment))
+colSide <- brewer.pal(8, "Dark2")[my_group]
+colMain <- colorRampPalette( c("green", "black", "red"), space = "rgb")(64)
+
+heatmap(total, ColSideColors = colSide, col = colMain, labRow = NA)
 ```
 
 # Important Features
 
 ```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
+target <- pData(corrected)
+ 
+###
+
 spc_scatterplot <- function(counts, treat, trans = "log2", minSpC = 2, minLFC = 1){
+  
+  treat <- as.factor(treat)
+  mspc <- data.frame(t(apply(counts, 1, function(x) tapply(x, treat, mean))))
+  mx <- apply(mspc[, 1:2], 1, max)
+  mn <- apply(mspc[, 1:2], 1, min)
+  fl <- apply(mspc[, 1:2], 1, function(x) max(x) >= minSpC) & abs(log2(mx/mn)) >= minLFC
+  
+  if (trans == "none") {
     
-    treat <- as.factor(treat)
-    mspc <- data.frame(t(apply(counts, 1, function(x) tapply(x, treat, mean))))
-    mx <- apply(mspc[, 1:2], 1, max)
-    mn <- apply(mspc[, 1:2], 1, min)
-    fl <- apply(mspc[, 1:2], 1, function(x) max(x) >= minSpC) & abs(log2(mx/mn)) >= minLFC
+    s_mspc <- mspc[fl ,]
     
-    if (trans == "none") {
-      
-      s_mspc <- mspc[fl ,]
-      
-      p <- ggplot(mspc, aes(mspc[,1], mspc[,2])) +
-        geom_point() +
-        geom_point(s_mspc, mapping = aes(x = s_mspc[,1], y = s_mspc[,2], color = "red")) +
-        geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray") +
-        geom_abline(intercept = 0, slope = 2, linetype = "dashed", color = "navy") +
-        geom_abline(intercept = 0, slope = 0.5, linetype = "dashed", color = "navy") +
-        xlab(paste("mean SpC(", colnames(mspc)[1], ")", sep = "")) +
-        ylab(paste("mean SpC(", colnames(mspc)[2], ")", sep = "")) +
-        theme_minimal() +
-        theme(legend.position = "none")
-    }
-    
-    if (trans == "sqrt") {
-      
-      sqrtm <- sqrt(mspc)
-      
-      s_mspc <- sqrtm[fl ,]
-      
-      p <- ggplot(sqrtm, aes(sqrtm[,1], sqrtm[,2])) +
-        geom_point() +
-        geom_point(s_mspc, mapping = aes(x = s_mspc[,1], y = s_mspc[,2], color = "red")) +
-        geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray") +
-        geom_abline(intercept = 0, slope = sqrt(2), linetype = "dashed", color = "navy") +
-        geom_abline(intercept = 0, slope = 1/sqrt(2), linetype = "dashed", color = "navy") +
-        xlab(paste("root mean SpC(", colnames(mspc)[1], ")", sep = "")) +
-        ylab(paste("root mean SpC(", colnames(mspc)[2], ")", sep = "")) +
-        theme_minimal() +
-        theme(legend.position = "none")
-    }
-    
-    if (trans == "log2") {
-      
-      logm <- log2(mspc + 0.01)
-      mxx <- max(logm[, 1])
-      mxy <- max(logm[, 2])
-      mx <- max(mxx, mxy)
-      
-      s_mspc <- logm[fl ,]
-      
-      p <- ggplot(logm, aes(logm[,1], logm[,2])) +
-        geom_point() +
-        geom_point(s_mspc, mapping = aes(x = s_mspc[,1], y = s_mspc[,2], color = "red")) +
-        geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray") +
-        geom_abline(intercept = log2(2), slope = 1, linetype = "dashed", color = "navy") +
-        geom_abline(intercept = -log2(2), slope = 1, linetype = "dashed", color = "navy") +
-        xlab(paste("log2(mean SpC(", colnames(mspc)[1], "))", sep = "")) +
-        ylab(paste("log2(mean SpC(", colnames(mspc)[2], "))", sep = "")) +
-        theme_minimal() +
-        theme(legend.position = "none")
-    }
-    
-    return(p)
+    p <- ggplot(mspc, aes(mspc[,1], mspc[,2])) +
+      geom_point() +
+      geom_point(s_mspc, mapping = aes(x = s_mspc[,1], y = s_mspc[,2], color = "red")) +
+      geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray") +
+      geom_abline(intercept = 0, slope = 2, linetype = "dashed", color = "navy") +
+      geom_abline(intercept = 0, slope = 0.5, linetype = "dashed", color = "navy") +
+      xlab(paste("mean SpC(", colnames(mspc)[1], ")", sep = "")) +
+      ylab(paste("mean SpC(", colnames(mspc)[2], ")", sep = "")) +
+      theme_minimal() +
+      ggtitle("Normalized and Batch Corrected") +
+      theme(legend.position = "none")
   }
   
-spc_scatterplot(spcm2, target$Treatment, trans = "sqrt", minSpC = 2, minLFC = 2)
+  if (trans == "sqrt") {
+    
+    sqrtm <- sqrt(mspc)
+    
+    s_mspc <- sqrtm[fl ,]
+    
+    p <- ggplot(sqrtm, aes(sqrtm[,1], sqrtm[,2])) +
+      geom_point() +
+      geom_point(s_mspc, mapping = aes(x = s_mspc[,1], y = s_mspc[,2], color = "red")) +
+      geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray") +
+      geom_abline(intercept = 0, slope = sqrt(2), linetype = "dashed", color = "navy") +
+      geom_abline(intercept = 0, slope = 1/sqrt(2), linetype = "dashed", color = "navy") +
+      xlab(paste("root mean SpC(", colnames(mspc)[1], ")", sep = "")) +
+      ylab(paste("root mean SpC(", colnames(mspc)[2], ")", sep = "")) +
+      theme_minimal() +
+      ggtitle("Normalized and Batch Corrected") +
+      theme(legend.position = "none")
+  }
+  
+  if (trans == "log2") {
+    
+    logm <- log2(mspc + 0.01)
+    mxx <- max(logm[, 1])
+    mxy <- max(logm[, 2])
+    mx <- max(mxx, mxy)
+    
+    s_mspc <- logm[fl ,]
+    
+    p <- ggplot(logm, aes(logm[,1], logm[,2])) +
+      geom_point() +
+      geom_point(s_mspc, mapping = aes(x = s_mspc[,1], y = s_mspc[,2], color = "red")) +
+      geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray") +
+      geom_abline(intercept = log2(2), slope = 1, linetype = "dashed", color = "navy") +
+      geom_abline(intercept = -log2(2), slope = 1, linetype = "dashed", color = "navy") +
+      xlab(paste("log2(mean SpC(", colnames(mspc)[1], "))", sep = "")) +
+      ylab(paste("log2(mean SpC(", colnames(mspc)[2], "))", sep = "")) +
+      theme_minimal() +
+      ggtitle("Normalized and Batch Corrected") +
+      theme(legend.position = "none")
+  }
+  
+  return(p)
+}
+
+spc_scatterplot(exprs(corrected), target$Treatment, trans = "log2", minSpC = 2, minLFC = 1)
 ```
 

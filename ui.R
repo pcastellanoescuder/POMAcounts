@@ -1,6 +1,6 @@
 
-options(repos = BiocManager::repositories())
-getOption("repos")
+# options(repos = BiocManager::repositories())
+# getOption("repos")
 
 source("helpers.R")
 source("themes.R")

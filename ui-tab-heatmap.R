@@ -11,10 +11,6 @@ fluidPage(tabsetPanel(
   
   tabPanel("Normalized and Batch Corrected", 
            # downloadButton("download_plot13", "Download Plot"),
-           plotOutput("heatmap3", height = "600px")),
-  
-  tabPanel("Normalized and Batch Corrected Expanded Heatmap", 
-           # downloadButton("download_plot13", "Download Plot"),
-           plotOutput("expanded_heatmap", height = "1000px"))
+           plotOutput("heatmap3", height = "600px"))
   
 ))
