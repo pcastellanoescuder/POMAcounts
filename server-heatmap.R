@@ -1,3 +1,4 @@
+source("aux_functions.R")
 
 output$heatmap1 <- renderPlot({
   
@@ -50,16 +51,17 @@ output$heatmap3 <- renderPlot({
   
 })
 
-# output$download_plot7 <- downloadHandler(
-#   filename =  function() {
-#     paste0("Heatmap_", Sys.Date())
-#   },
-#   # content is a function with argument file. content writes the plot to the device
-#   content = function(file) {
-#     pdf(file) # open the pdf device
-#     
-#     print() # for GGPLOT
-#     dev.off()  # turn the device off
-#     
-#   }) 
+output$expanded_heatmap <- downloadHandler(
+
+  filename = paste0(Sys.Date(), "_EDA_POMA_Expanded_Heatmap.pdf"),
+  content = function(file) {
+
+    corrected <- Barplot()$corrected
+
+    h <- nrow(exprs(corrected))/(2.54/0.35)
+    pdf(file = file, width = 7, height = h)
+    exp.heatmap(corrected, "Treatment", h = h, tit = "")
+    dev.off()
+    }
+  )
 

@@ -1,6 +1,6 @@
 ---
-title: "POMA: Statistical analysis tool for omics data"
-subtitle: "Exploratory Data Analysis Report"
+title: "POMA: R Package for Statistical Analysis of Mass Spectrometry Data"
+subtitle: "Exploratory Data Analysis - Report"
 date: '`r format(Sys.Date(), "%B, %Y")`'
 output: 
   pdf_document:
@@ -60,7 +60,8 @@ corrected
 
 ```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
 ### BARPLOT - SCALE TO THE MEDIAN RAW
-  
+
+target <- pData(raw)
 counts <- Biobase::exprs(raw)
 
 tcnts <- apply(counts, 2, sum)
@@ -84,6 +85,7 @@ ggplot(div, aes(x = sample, y = median, fill = Treatment)) +
 ```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
 ### BARPLOT - SCALE TO THE MEDIAN NORMALIZED
 
+target <- pData(norm)
 counts <- Biobase::exprs(norm)
 
 tcnts <- apply(counts, 2, sum)
@@ -109,6 +111,7 @@ ggplot(div, aes(x = sample, y = median, fill = Treatment)) +
 ```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
 ### BARPLOT - SCALE TO THE MEDIAN CORRECTED
 
+target <- pData(corrected)
 counts <- Biobase::exprs(corrected)
 
 tcnts <- apply(counts, 2, sum)
@@ -473,6 +476,6 @@ spc_scatterplot <- function(counts, treat, trans = "log2", minSpC = 2, minLFC = 
   return(p)
 }
 
-spc_scatterplot(exprs(corrected), target$Treatment, trans = "log2", minSpC = 2, minLFC = 1)
+spc_scatterplot(exprs(corrected), target$Treatment, trans = "sqrt", minSpC = 2, minLFC = 1)
 ```
 

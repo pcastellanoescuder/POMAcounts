@@ -1,6 +1,6 @@
 
-# options(repos = BiocManager::repositories())
-# getOption("repos")
+options(repos = BiocManager::repositories())
+getOption("repos")
 
 source("helpers.R")
 source("themes.R")
@@ -56,19 +56,19 @@ dashboardPage(skin = "blue",
               p(("Statistics and Bioinformatics Research Group"),"and", align="center",width=3),
               p(("Biomarkers and Nutritional & Food Metabolomics Research Group"),"from",
                 align="center", width=3),
-              p(("University of Barcelona"),align="center",width=3)
-              # p(("Copyright (C) 2018, code licensed under GPLv3"),align="center",width=4),
-              # p(("Code available on Github:"),a("https://github.com/pcastellanoescuder/POMA_Shiny",
-              #                                   href="https://github.com/pcastellanoescuder/POMA_Shiny"),
-              #   align="center",width=4),
-              # p(("POMA R package available on Github:"),a("https://github.com/pcastellanoescuder/POMA",
-              #                                   href="https://github.com/pcastellanoescuder/POMA"),
-              #   align="center",width=4)
-              ))
+              p(("University of Barcelona"),align="center",width = 3),
+              p(("Copyright (C) 2018, code licensed under GPLv3"), align = "center", width = 4),
+              p(("Code available on Github:"),a("https://github.com/pcastellanoescuder/edaPOMA",
+                                                href="https://github.com/pcastellanoescuder/edaPOMA"),
+                align="center",width=4),
+              p(("POMA R package available on Github:"),a("https://github.com/pcastellanoescuder/POMA",
+                                                href="https://github.com/pcastellanoescuder/POMA"),
+                align="center",width=4)
+              )),
 
     ## GOOGLE ANALYTICS
 
-    # tags$head(includeScript("google-analytics.js"))
+    tags$head(includeScript("google-analytics.js"))
   )
 )
 

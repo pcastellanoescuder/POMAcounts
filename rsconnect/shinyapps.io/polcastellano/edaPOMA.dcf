@@ -5,8 +5,8 @@ account: polcastellano
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1599379
-bundleId: 2723826
+bundleId: 2730530
 url: https://polcastellano.shinyapps.io/edaPOMA/
-when: 1578866507.32358
+when: 1579092041.76834
 asMultiple: FALSE
 asStatic: FALSE
