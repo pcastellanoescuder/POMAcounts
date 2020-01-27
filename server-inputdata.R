@@ -75,7 +75,7 @@ output$report <- downloadHandler(
     
     params <- list(raw = raw, norm = norm, corrected = corrected)
     
-    rmarkdown::render(file.path(tempdir(), "EDA_POMA_Report.Rmd"), 
+    rmarkdown::render("EDA_POMA_Report.Rmd", 
                       output_file = file,
                       params = params,
                       envir = new.env() # parent = globalenv()
