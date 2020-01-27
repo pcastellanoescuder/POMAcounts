@@ -7,7 +7,7 @@ tabPanel("Input Data",
                          br(),
                          br(),
 
-                         fileInput("proteines","Upload your proteomics file (.txt):",
+                         fileInput("proteines","Upload your counts file (.txt):",
                                    accept = c(
                                      "text/csv",
                                      "text/comma-separated-values,text/plain",
@@ -25,7 +25,7 @@ tabPanel("Input Data",
          
          bsCollapse(id="input_collapse_panel",open="data_panel",multiple = FALSE,
                     
-                    bsCollapsePanel(title="Proteomics Data",value="prot_panel",
+                    bsCollapsePanel(title="Counts File",value="prot_panel",
                                     div(style = 'overflow-x: scroll', DT::dataTableOutput("contents"), width = NULL,
                                         status = "primary")),
                     bsCollapsePanel(title="Target File",value="tar_panel",

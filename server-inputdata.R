@@ -35,11 +35,11 @@ output$contents_tar <- DT::renderDataTable(targetInput(), class = 'cell-border s
 
 output$report <- downloadHandler(
   
-  filename = "EDA_POMA_Report.pdf",
+  filename = paste0(Sys.Date(), "_EDA_POMA_Report.pdf"),
   content = function(file) {
     
-    tempReport <- file.path(tempdir(), "EDA_POMA_Report.Rmd") 
-    file.copy("EDA_POMA_Report.Rmd", tempReport, overwrite = TRUE) 
+    # tempReport <- file.path(tempdir(), "EDA_POMA_Report.Rmd") 
+    # file.copy("EDA_POMA_Report.Rmd", tempReport, overwrite = TRUE) 
     
     #### PREPROCESS
     
@@ -75,9 +75,10 @@ output$report <- downloadHandler(
     
     params <- list(raw = raw, norm = norm, corrected = corrected)
     
-    rmarkdown::render(tempReport, output_file = file,
+    rmarkdown::render(file.path(tempdir(), "EDA_POMA_Report.Rmd"), 
+                      output_file = file,
                       params = params,
-                      envir = new.env(parent = globalenv())
+                      envir = new.env() # parent = globalenv()
     )
   }
 )
