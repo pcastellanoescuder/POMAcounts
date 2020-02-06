@@ -13,7 +13,7 @@ params:
   corrected: NA
 ---
 
-```{r, echo = FALSE, warning = FALSE, comment = NA, message=FALSE}
+```{r, echo = FALSE, warning = FALSE, comment = NA, message = FALSE}
 # This file is part of POMA.
 
 # POMA is free software: you can redistribute it and/or modify
@@ -28,6 +28,19 @@ params:
 
 # You should have received a copy of the GNU General Public License
 # along with POMA. If not, see <https://www.gnu.org/licenses/>.
+
+library(tidyverse)
+library(RColorBrewer)
+library(mixOmics)
+library(msmsEDA)
+library(Biobase)
+library(MSnbase)
+library(reshape2)
+library(gplots)
+library(ggrepel)
+library(gtools)
+
+##
 
 raw <- params$raw
 norm <- params$norm
@@ -367,7 +380,7 @@ my_group <- as.numeric(as.factor(target$Treatment))
 colSide <- brewer.pal(8, "Dark2")[my_group]
 colMain <- colorRampPalette( c("green", "black", "red"), space = "rgb")(64)
 
-heatmap(total, ColSideColors = colSide, col = colMain, labRow = NA)
+heatmap(t(scale(t(total))), ColSideColors = colSide, col = colMain, labRow = NA)
 ```
 
 ## Normalized
@@ -382,7 +395,7 @@ my_group <- as.numeric(as.factor(target$Treatment))
 colSide <- brewer.pal(8, "Dark2")[my_group]
 colMain <- colorRampPalette( c("green", "black", "red"), space = "rgb")(64)
 
-heatmap(total, ColSideColors = colSide, col = colMain, labRow = NA)
+heatmap(t(scale(t(total))), ColSideColors = colSide, col = colMain, labRow = NA)
 ```
 
 ## Normalized and Batch Corrected
@@ -397,7 +410,7 @@ my_group <- as.numeric(as.factor(target$Treatment))
 colSide <- brewer.pal(8, "Dark2")[my_group]
 colMain <- colorRampPalette( c("green", "black", "red"), space = "rgb")(64)
 
-heatmap(total, ColSideColors = colSide, col = colMain, labRow = NA)
+heatmap(t(scale(t(total))), ColSideColors = colSide, col = colMain, labRow = NA)
 ```
 
 # Important Features
