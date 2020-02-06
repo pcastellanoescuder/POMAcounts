@@ -13,7 +13,7 @@ output$heatmap1 <- renderPlot({
   colSide <- brewer.pal(8, "Dark2")[my_group]
   colMain <- colorRampPalette( c("green", "black", "red"), space = "rgb")(64)
   
-  heatmap(total, ColSideColors = colSide, col = colMain, labRow = NA)
+  heatmap(t(scale(t(total))), ColSideColors = colSide, col = colMain, labRow = NA)
   
 })
 
@@ -30,7 +30,7 @@ output$heatmap2 <- renderPlot({
   colSide <- brewer.pal(8, "Dark2")[my_group]
   colMain <- colorRampPalette( c("green", "black", "red"), space = "rgb")(64)
   
-  heatmap(total, ColSideColors = colSide, col = colMain, labRow = NA)
+  heatmap(t(scale(t(total))), ColSideColors = colSide, col = colMain, labRow = NA)
   
 })
 
@@ -47,7 +47,7 @@ output$heatmap3 <- renderPlot({
   colSide <- brewer.pal(8, "Dark2")[my_group]
   colMain <- colorRampPalette( c("green", "black", "red"), space = "rgb")(64)
   
-  heatmap(total, ColSideColors = colSide, col = colMain, labRow = NA)
+  heatmap(t(scale(t(total))), ColSideColors = colSide, col = colMain, labRow = NA)
   
 })
 
