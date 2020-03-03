@@ -14,6 +14,8 @@ shinyServer(function(input, output, session) {
   source("server-cluster.R",local = TRUE)
   source("server-heatmap.R",local = TRUE)
   source("server-scatter.R",local = TRUE)
+  source("server-poisson.R",local = TRUE)
+  source("server-qlr.R",local = TRUE)
 
 })
 

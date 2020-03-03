@@ -40,6 +40,7 @@ installBiocifnot <- function(pckgName){
 }
 
 installBiocifnot("msmsEDA")
+installBiocifnot("msmsTests")
 installBiocifnot("mixOmics")
 installBiocifnot("Biobase")
 installBiocifnot("MSnbase")

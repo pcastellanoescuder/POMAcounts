@@ -7,7 +7,7 @@ source("themes.R")
 
 dashboardPage(skin = "blue",
               
-              dashboardHeader(title = logo_poma),
+  dashboardHeader(title = logo_poma),
   
   dashboardSidebar(sidebarMenu(
     menuItem("Input Data", tabName = "inputdata", icon = icon("upload")),
@@ -18,7 +18,11 @@ dashboardPage(skin = "blue",
              menuSubItem("Principal Component Analysis", tabName = "pca"),
              menuSubItem("Clustering", tabName = "cluster"),
              menuSubItem("Heatmap", tabName = "heatmap"),
-             menuSubItem("Important Features", tabName = "scatter"))
+             menuSubItem("Important Features", tabName = "scatter")),
+    menuItem("Statistical Analysis", tabName = "tests", icon = icon("chart-bar"),
+             menuSubItem("Poisson GLM", tabName = "poisson"),
+             menuSubItem("Quasi-likelihood GLM", tabName = "qlr"),
+             menuSubItem("Negative Binomial GLM", tabName = "binomial"))
 
   )),
 
@@ -45,7 +49,11 @@ dashboardPage(skin = "blue",
       tabItem(tabName = "heatmap",
               source("ui-tab-heatmap.R",local=TRUE)$value),
       tabItem(tabName = "scatter",
-              source("ui-tab-scatter.R",local=TRUE)$value)
+              source("ui-tab-scatter.R",local=TRUE)$value),
+      tabItem(tabName = "poisson",
+              source("ui-tab-poisson.R",local=TRUE)$value),
+      tabItem(tabName = "qlr",
+              source("ui-tab-qlr.R",local=TRUE)$value)
       ),
 
     tags$hr(),
