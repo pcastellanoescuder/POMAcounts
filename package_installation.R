@@ -23,8 +23,8 @@ installifnot <- function(pckgName){
   }
 }
 
-pk1 <- c("shiny", "shinydashboard", "DT", "reshape2", "tidyverse", "gplots", "RColorBrewer", 
-         "shinyBS", "ggrepel", "gtools")
+pk1 <- c("shiny", "devtools", "shinydashboard", "DT", "reshape2", "tidyverse", "gplots", "RColorBrewer", 
+         "shinyBS", "ggrepel", "gtools", "shinyhelper", "plotly")
          
 for (i in 1:length(pk1)){
   installifnot(pk1[i])
@@ -39,11 +39,10 @@ installBiocifnot <- function(pckgName){
   }
 }
 
-installBiocifnot("msmsEDA")
-installBiocifnot("msmsTests")
-installBiocifnot("mixOmics")
-installBiocifnot("Biobase")
-installBiocifnot("MSnbase")
+pk2 <- c("msmsEDA", "msmsTests", "mixOmics", "Biobase", "MSnbase")
+for (i in 1:length(pk2)){
+  installBiocifnot(pk2[i])
+}
 
 #### GITHUB PACKAGES
 

@@ -16,6 +16,7 @@ shinyServer(function(input, output, session) {
   source("server-scatter.R",local = TRUE)
   source("server-poisson.R",local = TRUE)
   source("server-qlr.R",local = TRUE)
+  source("server-binomial.R",local = TRUE)
 
 })
 

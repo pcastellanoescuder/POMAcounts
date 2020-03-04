@@ -1,7 +1,4 @@
 
-# options(repos = BiocManager::repositories())
-# getOption("repos")
-
 source("helpers.R")
 source("themes.R")
 
@@ -53,7 +50,9 @@ dashboardPage(skin = "blue",
       tabItem(tabName = "poisson",
               source("ui-tab-poisson.R",local=TRUE)$value),
       tabItem(tabName = "qlr",
-              source("ui-tab-qlr.R",local=TRUE)$value)
+              source("ui-tab-qlr.R",local=TRUE)$value),
+      tabItem(tabName = "binomial",
+              source("ui-tab-binomial.R",local=TRUE)$value)
       ),
 
     tags$hr(),
