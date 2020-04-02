@@ -21,7 +21,7 @@ Normplot <- reactive({
     geom_jitter() +
     geom_boxplot(color = "black", outlier.colour = NA) +
     theme(legend.position = "none") +
-    theme_minimal() +
+    theme_bw() +
     xlab("") +
     theme(axis.text.x = element_text(angle = 45, hjust = 1),
           legend.position = "top") +
@@ -45,7 +45,7 @@ Normplot <- reactive({
     geom_jitter() + 
     geom_boxplot(color = "black", outlier.colour = NA) + 
     theme(legend.position = "top") + 
-    theme_minimal() + 
+    theme_bw() + 
     xlab("") +
     theme(axis.text.x = element_text(angle = 45, hjust = 1), 
           legend.position = "top") +
@@ -69,7 +69,7 @@ Normplot <- reactive({
     geom_jitter() + 
     geom_boxplot(color = "black", outlier.colour = NA) + 
     theme(legend.position = "top") + 
-    theme_minimal() + 
+    theme_bw() + 
     xlab("") +
     theme(axis.text.x = element_text(angle = 45, hjust = 1), 
           legend.position = "top") +

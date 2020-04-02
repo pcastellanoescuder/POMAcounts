@@ -30,7 +30,8 @@ fluidPage(column(width = 3,
                  tabsetPanel(
                    
                    tabPanel("Results", 
-                            dataTableOutput("poissonResults")),
+                            div(style = 'overflow-x: scroll', DT::dataTableOutput("poissonResults"), width = NULL,
+                                status = "primary")),
                    
                    tabPanel("Volcano Plot", 
                             plotlyOutput("volcano1"))

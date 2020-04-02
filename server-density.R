@@ -10,7 +10,7 @@ Densityplot <- reactive({
   densityplot1 <- normtable_subjectsX %>% 
     ggplot(aes(x = value)) +
     geom_density(aes(group = Sample, color = Treatment), alpha = 0.4) +
-    theme_minimal() +
+    theme_bw() +
     theme(legend.position = "top") +
     scale_color_brewer(palette = "Dark2") +
     xlim(0, input$xlim)
@@ -20,7 +20,7 @@ Densityplot <- reactive({
   densityplot2 <- normtable_subjectsXX %>% 
     ggplot(aes(x = value)) +
     geom_density(aes(group = Sample, color = Treatment), alpha = 0.4) +
-    theme_minimal() +
+    theme_bw() +
     theme(legend.position = "top") +
     scale_color_brewer(palette = "Dark2") +
     xlim(0, input$xlim)
@@ -30,7 +30,7 @@ Densityplot <- reactive({
   densityplot3 <- normtable_subjectsXXX %>% 
     ggplot(aes(x = value)) +
     geom_density(aes(group = Sample, color = Treatment), alpha = 0.4) +
-    theme_minimal() +
+    theme_bw() +
     theme(legend.position = "top") +
     scale_color_brewer(palette = "Dark2") +
     xlim(0, input$xlim)

@@ -29,7 +29,7 @@ Barplot <- reactive({
   
   barplot1 <- ggplot(div, aes(x = sample, y = median, fill = Treatment)) +
     geom_bar(stat="identity")+
-    theme_minimal() +
+    theme_bw() +
     xlab("") +
     geom_hline(yintercept = 1, linetype = "dashed") +
     scale_fill_brewer(palette = "Dark2") + 
@@ -58,7 +58,7 @@ Barplot <- reactive({
   
   barplot2 <- ggplot(div, aes(x = sample, y = median, fill = Treatment)) +
     geom_bar(stat="identity")+
-    theme_minimal() +
+    theme_bw() +
     xlab("") +
     geom_hline(yintercept = 1, linetype = "dashed") +
     scale_fill_brewer(palette = "Dark2") + 
@@ -86,7 +86,7 @@ Barplot <- reactive({
   
   barplot3 <- ggplot(div, aes(x = sample, y = median, fill = Treatment)) +
     geom_bar(stat="identity")+
-    theme_minimal() +
+    theme_bw() +
     xlab("") +
     geom_hline(yintercept = 1, linetype = "dashed") +
     scale_fill_brewer(palette = "Dark2") + 

@@ -8,28 +8,14 @@ PCAplot <- reactive({
   res_pca1 <- mixOmics::pca(t(exprs(raw)))
   res_pca <- cbind(pData(raw), res_pca1$x)
   
-  if(input$labs == "yes"){
-    
-    pcaplot1 <- ggplot(res_pca, aes(PC1, PC2, color = Treatment, shape = Batch)) +
-      geom_point(size = 3, alpha = 0.8) +
-      ggrepel::geom_label_repel(aes(label = rownames(res_pca)), show.legend = F) +
-      theme_minimal() +
-      xlab(paste0("PC1 (", round(100*(res_pca1$explained_variance)[1], 2), "%)")) +
-      ylab(paste0("PC2 (", round(100*(res_pca1$explained_variance)[2], 2), "%)")) +
-      scale_color_brewer(palette = "Dark2")
-  }
-  
-  else{
-    
-    pcaplot1 <- ggplot(res_pca, aes(PC1, PC2, color = Treatment, shape = Batch)) +
-      geom_point(size = 3, alpha = 0.8) +
-      theme_minimal() +
-      xlab(paste0("PC1 (", round(100*(res_pca1$explained_variance)[1], 2), "%)")) +
-      ylab(paste0("PC2 (", round(100*(res_pca1$explained_variance)[2], 2), "%)")) +
-      scale_color_brewer(palette = "Dark2")
-    
-  }
-  
+  pcaplot1 <- ggplot(res_pca, aes(PC1, PC2, color = Treatment, shape = Batch)) +
+    geom_point(size = 3, alpha = 0.8) +
+    {if(input$labs == "yes")ggrepel::geom_label_repel(aes(label = rownames(res_pca)), show.legend = F)} +
+    theme_bw() +
+    xlab(paste0("PC1 (", round(100*(res_pca1$explained_variance)[1], 2), "%)")) +
+    ylab(paste0("PC2 (", round(100*(res_pca1$explained_variance)[2], 2), "%)")) +
+    scale_color_brewer(palette = "Dark2")
+
   ### NORM
   
   norm <- Barplot()$norm
@@ -37,27 +23,13 @@ PCAplot <- reactive({
   res_pca1 <- mixOmics::pca(t(exprs(norm)))
   res_pca <- cbind(pData(norm), res_pca1$x)
   
-  if(input$labs == "yes"){
-    
-    pcaplot2 <- ggplot(res_pca, aes(PC1, PC2, color = Treatment, shape = Batch)) +
-      geom_point(size = 3, alpha = 0.8) +
-      ggrepel::geom_label_repel(aes(label = rownames(res_pca)), show.legend = F) +
-      theme_minimal() +
-      xlab(paste0("PC1 (", round(100*(res_pca1$explained_variance)[1], 2), "%)")) +
-      ylab(paste0("PC2 (", round(100*(res_pca1$explained_variance)[2], 2), "%)")) +
-      scale_color_brewer(palette = "Dark2")
-  }
-  
-  else{
-    
-    pcaplot2 <- ggplot(res_pca, aes(PC1, PC2, color = Treatment, shape = Batch)) +
-      geom_point(size = 3, alpha = 0.8) +
-      theme_minimal() +
-      xlab(paste0("PC1 (", round(100*(res_pca1$explained_variance)[1], 2), "%)")) +
-      ylab(paste0("PC2 (", round(100*(res_pca1$explained_variance)[2], 2), "%)")) +
-      scale_color_brewer(palette = "Dark2")
-    
-  }
+  pcaplot2 <- ggplot(res_pca, aes(PC1, PC2, color = Treatment, shape = Batch)) +
+    geom_point(size = 3, alpha = 0.8) +
+    {if(input$labs == "yes")ggrepel::geom_label_repel(aes(label = rownames(res_pca)), show.legend = F)} +
+    theme_bw() +
+    xlab(paste0("PC1 (", round(100*(res_pca1$explained_variance)[1], 2), "%)")) +
+    ylab(paste0("PC2 (", round(100*(res_pca1$explained_variance)[2], 2), "%)")) +
+    scale_color_brewer(palette = "Dark2")
   
   ### CORR
   
@@ -66,27 +38,13 @@ PCAplot <- reactive({
   res_pca1 <- mixOmics::pca(t(exprs(corrected)))
   res_pca <- cbind(pData(corrected), res_pca1$x)
   
-  if(input$labs == "yes"){
-    
-    pcaplot3 <- ggplot(res_pca, aes(PC1, PC2, color = Treatment, shape = Batch)) +
-      geom_point(size = 3, alpha = 0.8) +
-      ggrepel::geom_label_repel(aes(label = rownames(res_pca)), show.legend = F) +
-      theme_minimal() +
-      xlab(paste0("PC1 (", round(100*(res_pca1$explained_variance)[1], 2), "%)")) +
-      ylab(paste0("PC2 (", round(100*(res_pca1$explained_variance)[2], 2), "%)")) +
-      scale_color_brewer(palette = "Dark2")
-  }
-  
-  else{
-    
-    pcaplot3 <- ggplot(res_pca, aes(PC1, PC2, color = Treatment, shape = Batch)) +
-      geom_point(size = 3, alpha = 0.8) +
-      theme_minimal() +
-      xlab(paste0("PC1 (", round(100*(res_pca1$explained_variance)[1], 2), "%)")) +
-      ylab(paste0("PC2 (", round(100*(res_pca1$explained_variance)[2], 2), "%)")) +
-      scale_color_brewer(palette = "Dark2")
-    
-  }
+  pcaplot3 <- ggplot(res_pca, aes(PC1, PC2, color = Treatment, shape = Batch)) +
+    geom_point(size = 3, alpha = 0.8) +
+    {if(input$labs == "yes")ggrepel::geom_label_repel(aes(label = rownames(res_pca)), show.legend = F)} +
+    theme_bw() +
+    xlab(paste0("PC1 (", round(100*(res_pca1$explained_variance)[1], 2), "%)")) +
+    ylab(paste0("PC2 (", round(100*(res_pca1$explained_variance)[2], 2), "%)")) +
+    scale_color_brewer(palette = "Dark2")
   
   return(list(pcaplot1 = pcaplot1, pcaplot2 = pcaplot2, pcaplot3 = pcaplot3))
   

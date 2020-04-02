@@ -2,19 +2,19 @@
 tabPanel("Input Data", 
          fluidRow(column(width = 3,
                          
-                         downloadButton("report", "Exploratory report", style="color: #fff; background-color: #00b300; border-color: #009900"),
+                         # downloadButton("report", "Exploratory report", style="color: #fff; background-color: #00b300; border-color: #009900"),
 
-                         br(),
-                         br(),
+                         # br(),
+                         # br(),
 
-                         fileInput("proteines","Upload your counts file (.txt):",
+                         fileInput("target",
+                                   "Upload your target file (.txt):",
                                    accept = c(
                                      "text/csv",
                                      "text/comma-separated-values,text/plain",
                                      ".csv")),
-
-                         fileInput("target",
-                                   "Upload your target file (.txt):",
+                         
+                         fileInput("proteines","Upload your counts file (.txt):",
                                    accept = c(
                                      "text/csv",
                                      "text/comma-separated-values,text/plain",
@@ -25,11 +25,12 @@ tabPanel("Input Data",
          
          bsCollapse(id="input_collapse_panel",open="data_panel",multiple = FALSE,
                     
-                    bsCollapsePanel(title="Counts File",value="prot_panel",
-                                    div(style = 'overflow-x: scroll', DT::dataTableOutput("contents"), width = NULL,
-                                        status = "primary")),
                     bsCollapsePanel(title="Target File",value="tar_panel",
                                     div(style = 'overflow-x: scroll', DT::dataTableOutput("contents_tar"), width = NULL,
+                                        status = "primary")),
+                    
+                    bsCollapsePanel(title="Counts File",value="prot_panel",
+                                    div(style = 'overflow-x: scroll', DT::dataTableOutput("contents"), width = NULL,
                                         status = "primary"))
                     ))
          ))

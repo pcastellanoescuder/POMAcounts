@@ -61,10 +61,12 @@ output$volcano1 <- renderPlotly({
     
   }
   
+  log2FC1 <- 2^(input$log2FC1)
+  
   df <- mutate(df, threshold = as.factor(ifelse(df$pvalue >= input$pval_cutoff1,
                                                 yes = "none",
-                                                no = ifelse(df$FC < log2(input$log2FC1),
-                                                            yes = ifelse(df$FC < -log2(input$log2FC1),
+                                                no = ifelse(df$FC < log2(log2FC1),
+                                                            yes = ifelse(df$FC < -log2(log2FC1),
                                                                          yes = "Down-regulated",
                                                                          no = "none"),
                                                             no = "Up-regulated"))))
@@ -75,11 +77,12 @@ output$volcano1 <- renderPlotly({
     xlab("log2 Fold Change") +
     ylab("-log10 p-value") +
     scale_y_continuous(trans = "log1p") +
-    geom_vline(xintercept = -log2(input$log2FC1), colour = "black", linetype = "dashed") +
-    geom_vline(xintercept = log2(input$log2FC1), colour = "black", linetype = "dashed") +
+    geom_vline(xintercept = -log2(log2FC1), colour = "black", linetype = "dashed") +
+    geom_vline(xintercept = log2(log2FC1), colour = "black", linetype = "dashed") +
     geom_hline(yintercept = -log10(input$pval_cutoff1), colour = "black", linetype = "dashed") +
     theme(legend.position = "none") +
-    theme_minimal() +
+    theme_bw() +
+    labs(color = "") +
     scale_color_manual(values = c("Down-regulated" = "#E64B35", "Up-regulated" = "#3182bd", "none" = "#636363")))
                 
 })

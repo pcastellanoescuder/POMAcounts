@@ -26,7 +26,7 @@ Scatterplot <- reactive({
         geom_abline(intercept = 0, slope = 0.5, linetype = "dashed", color = "navy") +
         xlab(paste("mean SpC(", colnames(mspc)[1], ")", sep = "")) +
         ylab(paste("mean SpC(", colnames(mspc)[2], ")", sep = "")) +
-        theme_minimal() +
+        theme_bw() +
         ggtitle("Normalized and Batch Corrected") +
         theme(legend.position = "none")
     }
@@ -45,7 +45,7 @@ Scatterplot <- reactive({
         geom_abline(intercept = 0, slope = 1/sqrt(2), linetype = "dashed", color = "navy") +
         xlab(paste("root mean SpC(", colnames(mspc)[1], ")", sep = "")) +
         ylab(paste("root mean SpC(", colnames(mspc)[2], ")", sep = "")) +
-        theme_minimal() +
+        theme_bw() +
         ggtitle("Normalized and Batch Corrected") +
         theme(legend.position = "none")
     }
@@ -67,7 +67,7 @@ Scatterplot <- reactive({
         geom_abline(intercept = -log2(2), slope = 1, linetype = "dashed", color = "navy") +
         xlab(paste("log2(mean SpC(", colnames(mspc)[1], "))", sep = "")) +
         ylab(paste("log2(mean SpC(", colnames(mspc)[2], "))", sep = "")) +
-        theme_minimal() +
+        theme_bw() +
         ggtitle("Normalized and Batch Corrected") +
         theme(legend.position = "none")
     }
@@ -75,18 +75,18 @@ Scatterplot <- reactive({
     return(p)
   }
   
-  scatter <- spc_scatterplot(exprs(corrected), target$Treatment, 
-                             trans = input$trans, minSpC = input$minSpC, 
+  scatter <- spc_scatterplot(exprs(corrected), target$Treatment,
+                             trans = input$trans, minSpC = input$minSpC,
                              minLFC = input$minLFC)
-    
-  return(list(scatter = scatter))
+
+  return(scatter)
   
   })
 
 ####
 
 output$scatter <- renderPlot({
-  Scatterplot()$scatter
+  Scatterplot()
 })
 
 # output$download_plot8 <- downloadHandler(
