@@ -69,7 +69,7 @@ dashboardPage(skin = "blue",
                                                 href="https://github.com/pcastellanoescuder/edaPOMA"),
                 align="center",width=4),
               p(("POMA R package available on Github:"),a("https://github.com/pcastellanoescuder/POMA",
-                                                href="https://github.com/pcastellanoescuder/POMA"),
+                                                          href="https://github.com/pcastellanoescuder/POMA"),
                 align="center",width=4)
               )),
 

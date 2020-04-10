@@ -25,13 +25,56 @@ targetInput <- reactive({
   }
 })
 
-#################
-                  
-output$contents <- DT::renderDataTable(proteinesInput(), class = 'cell-border stripe', 
-                                       rownames = FALSE)
 
-output$contents_tar <- DT::renderDataTable(targetInput(), class = 'cell-border stripe', 
-                                       rownames = FALSE)
+#################
+
+datasetInput <- reactive({
+  
+  if (!is.null(proteinesInput()) & !is.null(targetInput())){
+    
+    proteines <- proteinesInput()
+    target <- targetInput()
+    
+    colnames(target) <- c("Sample", "Treatment", "Batch")
+    colnames(proteines)[2] <- "Accession"
+    
+    target <- column_to_rownames(target, "Sample")
+    proteines <- column_to_rownames(proteines, "Accession") 
+    proteines <- proteines[, colnames(proteines) %in% rownames(target)]
+    
+    if(!is.null(input$contents_tar_rows_selected)){
+      target <- target[input$contents_tar_rows_selected ,]
+      proteines <- proteines[, input$contents_tar_rows_selected]
+    } 
+    
+    data <- MSnbase::MSnSet(exprs = as.matrix(proteines), pData = target)
+    
+  }
+  
+  return(list(data = data, proteines = proteines, target = target))
+  
+})
+
+####
+                  
+output$contents <- DT::renderDataTable({
+  
+  datatable(datasetInput()$proteines, 
+            class = 'cell-border stripe', 
+            rownames = TRUE, options(list(scrollX = TRUE)))
+  })
+
+##
+
+output$contents_tar <- DT::renderDataTable({
+  
+  datatable(targetInput(), 
+            class = 'cell-border stripe', 
+            rownames = FALSE, options(list(scrollX = TRUE)))
+  
+})
+
+##
 
 output$report <- downloadHandler(
   

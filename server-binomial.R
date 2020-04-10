@@ -16,7 +16,7 @@ BINOMIAL <- reactive({
   binomial_res <- msms.edgeR(corrected, alt_f, null_f, div = div, fnm = "Treatment")
   binomial_res$p.adjust <- p.adjust(binomial_res$p.value, method = input$adjustment_method_binomial)
     
-  return(list(binomial_res = binomial_res))
+  return(binomial_res)
   
   })
 
@@ -24,10 +24,11 @@ BINOMIAL <- reactive({
 
 output$binomialResults <- DT::renderDataTable({
   
-  DT::datatable(BINOMIAL()$binomial_res,
+  DT::datatable(BINOMIAL(),
                 filter = 'none',extensions = 'Buttons',
                 escape=FALSE,  rownames=TRUE, class = 'cell-border stripe',
                 options = list(
+                  scrollX = TRUE,
                   dom = 'Bfrtip',
                   buttons = 
                     list("copy", "print", list(
@@ -40,12 +41,12 @@ output$binomialResults <- DT::renderDataTable({
                                         filename="Poma_Negative-Binomial")),
                       text="Dowload")),
                   order=list(list(2, "desc")),
-                  pageLength = nrow(BINOMIAL()$binomial_res)))
+                  pageLength = nrow(BINOMIAL())))
 })
 
 output$volcano3 <- renderPlotly({
   
-  df <- BINOMIAL()$binomial_res
+  df <- BINOMIAL()
   
   names <- rownames(df)
   
@@ -86,4 +87,53 @@ output$volcano3 <- renderPlotly({
              scale_color_manual(values = c("Down-regulated" = "#E64B35", "Up-regulated" = "#3182bd", "none" = "#636363")))
   
 })
+
+####
+
+output$heatmap_binomial <- renderPlot({
+  
+  corrected <- Barplot()$corrected
+  binomial_res <- BINOMIAL()
+  binomial_res_names <- rownames(binomial_res[binomial_res$p.adjust < 0.05 ,])
+  
+  total <- exprs(corrected)
+  total <- total[rownames(total) %in% binomial_res_names ,]
+  
+  ####
+  
+  target <- pData(corrected)
+  
+  my_group <- as.numeric(as.factor(target$Treatment))
+  colSide <- brewer.pal(8, "Dark2")[my_group]
+  colMain <- colorRampPalette( c("green", "black", "red"), space = "rgb")(64)
+  
+  heatmap(t(scale(t(total))), ColSideColors = colSide, col = colMain, labRow = NA)
+  
+})
+
+##
+
+output$expanded_heatmap_binomial <- downloadHandler(
+  
+  filename = paste0(Sys.Date(), "_TEST_POMA_Expanded_Heatmap_binomial.pdf"),
+  content = function(file) {
+    
+    corrected <- Barplot()$corrected
+    binomial_res <- BINOMIAL()
+    binomial_res_names <- rownames(binomial_res[binomial_res$p.adjust < 0.05 ,])
+    
+    total <- exprs(corrected)
+    total <- total[rownames(total) %in% binomial_res_names ,]
+    target <- pData(corrected)
+    
+    new_corrected <- MSnbase::MSnSet(exprs = as.matrix(total), pData = target)
+    
+    ####
+    
+    h <- nrow(exprs(new_corrected))/(2.54/0.35)
+    pdf(file = file, width = 7, height = h)
+    exp.heatmap(new_corrected, "Treatment", h = h, tit = "")
+    dev.off()
+  }
+)
 

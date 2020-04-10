@@ -1,18 +1,9 @@
 
 Barplot <- reactive({
     
-  proteines <- proteinesInput()
-  target <- targetInput()
-  
-  colnames(target) <- c("Sample", "Treatment", "Batch")
-  colnames(proteines)[2] <- "Accession"
-  
-  target <- column_to_rownames(target, "Sample")
-  proteines <- column_to_rownames(proteines, "Accession") 
-  proteines <- proteines[, colnames(proteines) %in% rownames(target)]
-  
-  data <- MSnbase::MSnSet(exprs = as.matrix(proteines), pData = target)
-  
+  data <- datasetInput()$data
+  target <- datasetInput()$target
+    
   ## PRE-PROCESSING (pp.msms.data)
   
   raw <- pp.msms.data(data)

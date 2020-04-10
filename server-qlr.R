@@ -16,7 +16,7 @@ QLR <- reactive({
   qlr_res <- msms.glm.qlll(corrected, alt_f, null_f, div = div)
   qlr_res$p.adjust <- p.adjust(qlr_res$p.value, method = input$adjustment_method_qlr)
     
-  return(list(qlr_res = qlr_res))
+  return(qlr_res)
   
   })
 
@@ -24,10 +24,11 @@ QLR <- reactive({
 
 output$qlrResults <- DT::renderDataTable({
   
-  DT::datatable(QLR()$qlr_res,
+  DT::datatable(QLR(),
                 filter = 'none',extensions = 'Buttons',
                 escape=FALSE,  rownames=TRUE, class = 'cell-border stripe',
                 options = list(
+                  scrollX = TRUE,
                   dom = 'Bfrtip',
                   buttons = 
                     list("copy", "print", list(
@@ -40,12 +41,12 @@ output$qlrResults <- DT::renderDataTable({
                                         filename="Poma_Quasi-likelihood")),
                       text="Dowload")),
                   order=list(list(2, "desc")),
-                  pageLength = nrow(QLR()$qlr_res)))
+                  pageLength = nrow(QLR())))
 })
 
 output$volcano2 <- renderPlotly({
   
-  df <- QLR()$qlr_res
+  df <- QLR()
   
   names <- rownames(df)
   
@@ -86,4 +87,53 @@ output$volcano2 <- renderPlotly({
              scale_color_manual(values = c("Down-regulated" = "#E64B35", "Up-regulated" = "#3182bd", "none" = "#636363")))
   
 })
+
+####
+
+output$heatmap_qlr <- renderPlot({
+  
+  corrected <- Barplot()$corrected
+  qlr_res <- QLR()
+  qlr_res_names <- rownames(qlr_res[qlr_res$p.adjust < 0.05 ,])
+  
+  total <- exprs(corrected)
+  total <- total[rownames(total) %in% qlr_res_names ,]
+  
+  ####
+  
+  target <- pData(corrected)
+  
+  my_group <- as.numeric(as.factor(target$Treatment))
+  colSide <- brewer.pal(8, "Dark2")[my_group]
+  colMain <- colorRampPalette( c("green", "black", "red"), space = "rgb")(64)
+  
+  heatmap(t(scale(t(total))), ColSideColors = colSide, col = colMain, labRow = NA)
+  
+})
+
+##
+
+output$expanded_heatmap_qlr <- downloadHandler(
+  
+  filename = paste0(Sys.Date(), "_TEST_POMA_Expanded_Heatmap_qlr.pdf"),
+  content = function(file) {
+    
+    corrected <- Barplot()$corrected
+    qlr_res <- QLR()
+    qlr_res_names <- rownames(qlr_res[qlr_res$p.adjust < 0.05 ,])
+    
+    total <- exprs(corrected)
+    total <- total[rownames(total) %in% qlr_res_names ,]
+    target <- pData(corrected)
+    
+    new_corrected <- MSnbase::MSnSet(exprs = as.matrix(total), pData = target)
+    
+    ####
+    
+    h <- nrow(exprs(new_corrected))/(2.54/0.35)
+    pdf(file = file, width = 7, height = h)
+    exp.heatmap(new_corrected, "Treatment", h = h, tit = "")
+    dev.off()
+  }
+)
 

@@ -16,7 +16,7 @@ Poisson <- reactive({
   pois_res <- msms.glm.pois(corrected, alt_f, null_f, div = div)
   pois_res$p.adjust <- p.adjust(pois_res$p.value, method = input$adjustment_method_poisson)
     
-  return(list(pois_res = pois_res))
+  return(pois_res)
   
   })
 
@@ -24,10 +24,11 @@ Poisson <- reactive({
 
 output$poissonResults <- DT::renderDataTable({
   
-  DT::datatable(Poisson()$pois_res,
+  DT::datatable(Poisson(),
                 filter = 'none',extensions = 'Buttons',
                 escape=FALSE,  rownames=TRUE, class = 'cell-border stripe',
                 options = list(
+                  scrollX = TRUE,
                   dom = 'Bfrtip',
                   buttons = 
                     list("copy", "print", list(
@@ -40,12 +41,12 @@ output$poissonResults <- DT::renderDataTable({
                                         filename="Poma_Poisson")),
                       text="Dowload")),
                   order=list(list(2, "desc")),
-                  pageLength = nrow(Poisson()$pois_res)))
+                  pageLength = nrow(Poisson())))
 })
 
 output$volcano1 <- renderPlotly({
   
-  df <- Poisson()$pois_res
+  df <- Poisson()
   
   names <- rownames(df)
   
@@ -86,4 +87,51 @@ output$volcano1 <- renderPlotly({
     scale_color_manual(values = c("Down-regulated" = "#E64B35", "Up-regulated" = "#3182bd", "none" = "#636363")))
                 
 })
+
+####
+
+output$heatmap_poisson <- renderPlot({
+  
+  corrected <- Barplot()$corrected
+  pois_res <- Poisson()
+  pois_res_names <- rownames(pois_res[pois_res$p.adjust < 0.05 ,])
+
+  total <- exprs(corrected)
+  total <- total[rownames(total) %in% pois_res_names ,]
+  
+  ####
+  
+  target <- pData(corrected)
+  
+  my_group <- as.numeric(as.factor(target$Treatment))
+  colSide <- brewer.pal(8, "Dark2")[my_group]
+  colMain <- colorRampPalette( c("green", "black", "red"), space = "rgb")(64)
+  
+  heatmap(t(scale(t(total))), ColSideColors = colSide, col = colMain, labRow = NA)
+  
+})
+
+output$expanded_heatmap_poisson <- downloadHandler(
+
+  filename = paste0(Sys.Date(), "_TEST_POMA_Expanded_Heatmap_poisson.pdf"),
+  content = function(file) {
+
+    corrected <- Barplot()$corrected
+    pois_res <- Poisson()
+    pois_res_names <- rownames(pois_res[pois_res$p.adjust < 0.05 ,])
+
+    total <- exprs(corrected)
+    total <- total[rownames(total) %in% pois_res_names ,]
+    target <- pData(corrected)
+
+    new_corrected <- MSnbase::MSnSet(exprs = as.matrix(total), pData = target)
+
+    ####
+
+    h <- nrow(exprs(new_corrected))/(2.54/0.35)
+    pdf(file = file, width = 7, height = h)
+    exp.heatmap(new_corrected, "Treatment", h = h, tit = "")
+    dev.off()
+  }
+)
 

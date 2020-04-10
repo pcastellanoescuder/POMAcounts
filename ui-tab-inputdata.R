@@ -23,15 +23,11 @@ tabPanel("Input Data",
 
          column(width = 9,
          
-         bsCollapse(id="input_collapse_panel",open="data_panel",multiple = FALSE,
+         bsCollapse(id="input_collapse_panel",open="tar_panel",multiple = FALSE,
                     
-                    bsCollapsePanel(title="Target File",value="tar_panel",
-                                    div(style = 'overflow-x: scroll', DT::dataTableOutput("contents_tar"), width = NULL,
-                                        status = "primary")),
+                    bsCollapsePanel(title="Target File",value="tar_panel", DT::dataTableOutput("contents_tar")),
                     
-                    bsCollapsePanel(title="Counts File",value="prot_panel",
-                                    div(style = 'overflow-x: scroll', DT::dataTableOutput("contents"), width = NULL,
-                                        status = "primary"))
+                    bsCollapsePanel(title="Counts File",value="prot_panel", DT::dataTableOutput("contents"))
                     ))
          ))
 

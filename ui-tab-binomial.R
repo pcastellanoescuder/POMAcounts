@@ -29,12 +29,17 @@ fluidPage(column(width = 3,
                  
                  tabsetPanel(
                    
-                   tabPanel("Results", 
-                            div(style = 'overflow-x: scroll', DT::dataTableOutput("binomialResults"), width = NULL,
-                                status = "primary")),
+                   tabPanel("Results", DT::dataTableOutput("binomialResults")),
                    
-                   tabPanel("Volcano Plot", 
-                            plotlyOutput("volcano3"))
+                   tabPanel("Volcano Plot", plotlyOutput("volcano3")),
+                   
+                   tabPanel("Normalized and Batch Corrected Heatmap", 
+                            downloadButton("expanded_heatmap_binomial", "Download Expanded Heatmap"),
+                            
+                            br(),
+                            br(),
+                            
+                            plotOutput("heatmap_binomial", height = "600px"))
                  )
                  
                  ))
