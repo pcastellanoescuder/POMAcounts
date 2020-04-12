@@ -5,6 +5,19 @@ Poisson <- reactive({
   corrected <- Barplot()$corrected
   target <- pData(corrected)
   
+  validate(
+    need(length(levels(as.factor(target$Treatment))) == 2, paste0(clisymbols::symbol$cross, " Select two groups in the 'Input Data' panel"))
+  )
+  
+  ### compute means
+  
+  my_counts <- exprs(corrected) %>% t() %>% as.data.frame() %>% mutate(Treatment = target$Treatment)
+  
+  means <- data.frame(aggregate(my_counts, by = list(my_counts$Treatment), FUN = mean)) %>% 
+    column_to_rownames("Group.1") %>% t() %>% as.data.frame() %>% round(2) %>% filter(rownames(.) != "Treatment")
+  
+  colnames(means) <- paste0("Mean", colnames(means))
+  
   ### Null and alternative model
   null_f <- "y ~ 1"
   alt_f <- paste0("y ~ ", input$h1_1)
@@ -15,7 +28,10 @@ Poisson <- reactive({
   ### Poisson GLM
   pois_res <- msms.glm.pois(corrected, alt_f, null_f, div = div)
   pois_res$p.adjust <- p.adjust(pois_res$p.value, method = input$adjustment_method_poisson)
-    
+  
+  pois_res <- cbind(means, pois_res) %>% rename(log2FC = LogFC) %>% mutate(log2FC = round(log2FC, 2),
+                                                                           D = round(D, 3))
+  
   return(pois_res)
   
   })
@@ -50,15 +66,17 @@ output$volcano1 <- renderPlotly({
   
   names <- rownames(df)
   
+  df <- df %>% mutate(counts = rowMeans(select(., starts_with("Mean")), na.rm = TRUE))
+  
   if(input$pval1 == "raw"){
     
-    df <- data.frame(pvalue = df$p.value, FC = round(df$LogFC, 2), names = names)
+    df <- data.frame(pvalue = df$p.value, FC = round(df$log2FC, 2), names = names, counts = round(df$counts, 2))
     
   }
   
   else {
     
-    df <- data.frame(pvalue = df$p.adjust, FC = round(df$LogFC, 2), names = names)
+    df <- data.frame(pvalue = df$p.adjust, FC = round(df$log2FC, 2), names = names, counts = round(df$counts, 2))
     
   }
   
@@ -72,19 +90,39 @@ output$volcano1 <- renderPlotly({
                                                                          no = "none"),
                                                             no = "Up-regulated"))))
   
-  ggplotly(ggplot(data = df, aes(x = FC, y = -log10(pvalue), color = threshold, labels = names)) +
-    geom_point(size = 1.75, alpha = 0.8) +
-    xlim(c(-(input$xlim1), input$xlim1)) +
-    xlab("log2 Fold Change") +
-    ylab("-log10 p-value") +
-    scale_y_continuous(trans = "log1p") +
-    geom_vline(xintercept = -log2(log2FC1), colour = "black", linetype = "dashed") +
-    geom_vline(xintercept = log2(log2FC1), colour = "black", linetype = "dashed") +
-    geom_hline(yintercept = -log10(input$pval_cutoff1), colour = "black", linetype = "dashed") +
-    theme(legend.position = "none") +
-    theme_bw() +
-    labs(color = "") +
-    scale_color_manual(values = c("Down-regulated" = "#E64B35", "Up-regulated" = "#3182bd", "none" = "#636363")))
+  if(!isTRUE(input$show_counts1)){
+    
+    ggplotly(ggplot(data = df, aes(x = FC, y = -log10(pvalue), color = threshold, labels = names)) +
+               geom_point(size = 1.75, alpha = 0.8) +
+               xlim(c(-(input$xlim1), input$xlim1)) +
+               xlab("log2 Fold Change") +
+               ylab("-log10 p-value") +
+               scale_y_continuous(trans = "log1p") +
+               geom_vline(xintercept = -log2(log2FC1), colour = "black", linetype = "dashed") +
+               geom_vline(xintercept = log2(log2FC1), colour = "black", linetype = "dashed") +
+               geom_hline(yintercept = -log10(input$pval_cutoff1), colour = "black", linetype = "dashed") +
+               theme(legend.position = "none") +
+               theme_bw() +
+               labs(color = "") +
+               scale_color_manual(values = c("Down-regulated" = "#E64B35", "Up-regulated" = "#3182bd", "none" = "#636363")))
+    
+  }
+  
+  else{
+    
+    ggplotly(ggplot(data = df, aes(x = FC, y = -log10(pvalue), color = counts, labels = names)) +
+               geom_point(size = 1.75, alpha = 0.8) +
+               xlim(c(-(input$xlim1), input$xlim1)) +
+               xlab("log2 Fold Change") +
+               ylab("-log10 p-value") +
+               scale_y_continuous(trans = "log1p") +
+               geom_vline(xintercept = -log2(log2FC1), colour = "black", linetype = "dashed") +
+               geom_vline(xintercept = log2(log2FC1), colour = "black", linetype = "dashed") +
+               geom_hline(yintercept = -log10(input$pval_cutoff1), colour = "black", linetype = "dashed") +
+               theme_bw())
+    
+  }
+
                 
 })
 
@@ -94,7 +132,7 @@ output$heatmap_poisson <- renderPlot({
   
   corrected <- Barplot()$corrected
   pois_res <- Poisson()
-  pois_res_names <- rownames(pois_res[pois_res$p.adjust < 0.05 ,])
+  pois_res_names <- rownames(pois_res[pois_res$p.adjust < input$pval_cutoff1 ,])
 
   total <- exprs(corrected)
   total <- total[rownames(total) %in% pois_res_names ,]
@@ -118,7 +156,7 @@ output$expanded_heatmap_poisson <- downloadHandler(
 
     corrected <- Barplot()$corrected
     pois_res <- Poisson()
-    pois_res_names <- rownames(pois_res[pois_res$p.adjust < 0.05 ,])
+    pois_res_names <- rownames(pois_res[pois_res$p.adjust < input$pval_cutoff1 ,])
 
     total <- exprs(corrected)
     total <- total[rownames(total) %in% pois_res_names ,]

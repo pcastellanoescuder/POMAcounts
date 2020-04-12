@@ -28,7 +28,10 @@ dashboardPage(skin = "blue",
     poma_theme,
 
     tags$head(
-      tags$link(rel = "stylesheet", type = "text/css", href = "mycss.css")
+      tags$link(rel = "stylesheet", type = "text/css", href = "mycss.css"),
+      tags$style(HTML("
+      .shiny-output-error-validation {
+        color: red; }"))
     ),
     tabItems(
       tabItem(tabName = "inputdata",
@@ -64,9 +67,9 @@ dashboardPage(skin = "blue",
               p(("Biomarkers and Nutritional & Food Metabolomics Research Group"),"from",
                 align="center", width=3),
               p(("University of Barcelona"),align="center",width = 3),
-              p(("Copyright (C) 2018, code licensed under GPLv3"), align = "center", width = 4),
-              p(("Code available on Github:"),a("https://github.com/pcastellanoescuder/edaPOMA",
-                                                href="https://github.com/pcastellanoescuder/edaPOMA"),
+              p(("Copyright (C) 2019, code licensed under GPLv3"), align = "center", width = 4),
+              p(("Code available on Github:"),a("https://github.com/pcastellanoescuder/POMAcounts",
+                                                href="https://github.com/pcastellanoescuder/POMAcounts"),
                 align="center",width=4),
               p(("POMA R package available on Github:"),a("https://github.com/pcastellanoescuder/POMA",
                                                           href="https://github.com/pcastellanoescuder/POMA"),

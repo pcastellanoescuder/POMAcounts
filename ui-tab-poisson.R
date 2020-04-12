@@ -16,8 +16,10 @@ fluidPage(column(width = 3,
                    
                    h4("Volcano Plot Parameters:"),
                    
+                   checkboxInput("show_counts1", "Show counts mean", FALSE),
+                   
                    selectInput("pval1", "pvalue type", choices = c("raw", "adjusted"), selected = "raw"),
-                   numericInput("pval_cutoff1", "pvalue cutoff", value = 0.05),
+                   numericInput("pval_cutoff1", "pvalue cutoff (volcano plot and heatmap)", value = 0.05),
                    numericInput("log2FC1", "log2 Fold Change cutoff", value = 1.5),
                    numericInput("xlim1", "x-label limit", value = 5)
                  
