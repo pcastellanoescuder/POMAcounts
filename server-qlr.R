@@ -29,8 +29,10 @@ QLR <- reactive({
   qlr_res <- msms.glm.qlll(corrected, alt_f, null_f, div = div)
   qlr_res$p.adjust <- p.adjust(qlr_res$p.value, method = input$adjustment_method_qlr)
   
+  my_names <- rownames(qlr_res)
   qlr_res <- cbind(means, qlr_res) %>% rename(log2FC = LogFC) %>% mutate(log2FC = round(log2FC, 2),
                                                                          D = round(D, 3))
+  rownames(qlr_res) <- my_names
   
   return(qlr_res)
   

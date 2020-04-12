@@ -29,8 +29,10 @@ Poisson <- reactive({
   pois_res <- msms.glm.pois(corrected, alt_f, null_f, div = div)
   pois_res$p.adjust <- p.adjust(pois_res$p.value, method = input$adjustment_method_poisson)
   
+  my_names <- rownames(pois_res)
   pois_res <- cbind(means, pois_res) %>% rename(log2FC = LogFC) %>% mutate(log2FC = round(log2FC, 2),
                                                                            D = round(D, 3))
+  rownames(pois_res) <- my_names
   
   return(pois_res)
   

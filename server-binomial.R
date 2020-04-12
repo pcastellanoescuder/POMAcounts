@@ -29,8 +29,10 @@ BINOMIAL <- reactive({
   binomial_res <- msms.edgeR(corrected, alt_f, null_f, div = div, fnm = "Treatment")
   binomial_res$p.adjust <- p.adjust(binomial_res$p.value, method = input$adjustment_method_binomial)
   
+  my_names <- rownames(binomial_res)
   binomial_res <- cbind(means, binomial_res) %>% rename(log2FC = LogFC) %>% mutate(log2FC = round(log2FC, 2),
                                                                                    LR = round(LR, 3))
+  rownames(binomial_res) <- my_names
   
   return(binomial_res)
   
