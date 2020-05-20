@@ -37,6 +37,10 @@ datasetInput <- reactive({
     
     colnames(target) <- c("Sample", "Treatment", "Batch")
     colnames(proteines)[2] <- "Accession"
+    colnames(proteines)[1] <- "gene_name"
+    
+    proteines <- proteines %>%
+      mutate(Accession = paste0(gene_name, ";", Accession))
     
     target <- column_to_rownames(target, "Sample")
     proteines <- column_to_rownames(proteines, "Accession") 

@@ -30,9 +30,19 @@ QLR <- reactive({
   qlr_res$p.adjust <- p.adjust(qlr_res$p.value, method = input$adjustment_method_qlr)
   
   my_names <- rownames(qlr_res)
-  qlr_res <- cbind(means, qlr_res) %>% rename(log2FC = LogFC) %>% mutate(log2FC = round(log2FC, 2),
-                                                                         D = round(D, 3))
-  rownames(qlr_res) <- my_names
+  
+  qlr_res <- cbind(means, qlr_res) %>% 
+    rename(log2FC = LogFC) %>% 
+    mutate(log2FC = round(log2FC, 2), 
+           D = round(D, 3),
+           names = my_names,
+           GeneName = stringr::str_remove(names, pattern = "^.*GN="),
+           GeneName = stringr::str_remove(GeneName, pattern = "(?s) .*"),
+           Protein = stringr::str_remove(names, pattern = "^.*;")) %>%
+    remove_rownames() %>%
+    column_to_rownames("Protein") %>%
+    select(GeneName, everything()) %>%
+    select(-names)
   
   return(qlr_res)
   

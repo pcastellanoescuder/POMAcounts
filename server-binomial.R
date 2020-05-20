@@ -30,9 +30,19 @@ BINOMIAL <- reactive({
   binomial_res$p.adjust <- p.adjust(binomial_res$p.value, method = input$adjustment_method_binomial)
   
   my_names <- rownames(binomial_res)
-  binomial_res <- cbind(means, binomial_res) %>% rename(log2FC = LogFC) %>% mutate(log2FC = round(log2FC, 2),
-                                                                                   LR = round(LR, 3))
-  rownames(binomial_res) <- my_names
+  
+  binomial_res <- cbind(means, binomial_res) %>% 
+    rename(log2FC = LogFC) %>% 
+    mutate(log2FC = round(log2FC, 2), 
+           LR = round(LR, 3),
+           names = my_names,
+           GeneName = stringr::str_remove(names, pattern = "^.*GN="),
+           GeneName = stringr::str_remove(GeneName, pattern = "(?s) .*"),
+           Protein = stringr::str_remove(names, pattern = "^.*;")) %>%
+    remove_rownames() %>%
+    column_to_rownames("Protein") %>%
+    select(GeneName, everything()) %>%
+    select(-names)
   
   return(binomial_res)
   

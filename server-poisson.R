@@ -30,9 +30,19 @@ Poisson <- reactive({
   pois_res$p.adjust <- p.adjust(pois_res$p.value, method = input$adjustment_method_poisson)
   
   my_names <- rownames(pois_res)
-  pois_res <- cbind(means, pois_res) %>% rename(log2FC = LogFC) %>% mutate(log2FC = round(log2FC, 2),
-                                                                           D = round(D, 3))
-  rownames(pois_res) <- my_names
+  
+  pois_res <- cbind(means, pois_res) %>% 
+    rename(log2FC = LogFC) %>% 
+    mutate(log2FC = round(log2FC, 2), 
+           D = round(D, 3),
+           names = my_names,
+           GeneName = stringr::str_remove(names, pattern = "^.*GN="),
+           GeneName = stringr::str_remove(GeneName, pattern = "(?s) .*"),
+           Protein = stringr::str_remove(names, pattern = "^.*;")) %>%
+    remove_rownames() %>%
+    column_to_rownames("Protein") %>%
+    select(GeneName, everything()) %>%
+    select(-names)
   
   return(pois_res)
   
