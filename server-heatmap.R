@@ -58,6 +58,9 @@ output$expanded_heatmap <- downloadHandler(
 
     corrected <- Barplot()$corrected
 
+    rownames(corrected) <- rownames(corrected) %>%
+      stringr::str_remove(pattern = "^.*;")
+    
     h <- nrow(exprs(corrected))/(2.54/0.35)
     pdf(file = file, width = 7, height = h)
     exp.heatmap(corrected, "Treatment", h = h, tit = "")

@@ -76,7 +76,8 @@ output$volcano2 <- renderPlotly({
   
   df <- QLR()
   
-  names <- rownames(df)
+  names <- rownames(df) %>%
+    stringr::str_remove(pattern = "^.*;")
   
   df <- df %>% mutate(counts = rowMeans(select(., starts_with("Mean")), na.rm = TRUE))
   
@@ -145,6 +146,8 @@ output$heatmap_qlr <- renderPlot({
   qlr_res_names <- rownames(qlr_res[qlr_res$p.adjust < input$pval_cutoff2 ,])
   
   total <- exprs(corrected)
+  rownames(total) <- rownames(total) %>%
+    stringr::str_remove(pattern = "^.*;")
   total <- total[rownames(total) %in% qlr_res_names ,]
   
   ####
@@ -171,6 +174,8 @@ output$expanded_heatmap_qlr <- downloadHandler(
     qlr_res_names <- rownames(qlr_res[qlr_res$p.adjust < input$pval_cutoff2 ,])
     
     total <- exprs(corrected)
+    rownames(total) <- rownames(total) %>%
+      stringr::str_remove(pattern = "^.*;")
     total <- total[rownames(total) %in% qlr_res_names ,]
     target <- pData(corrected)
     

@@ -76,7 +76,8 @@ output$volcano3 <- renderPlotly({
   
   df <- BINOMIAL()
   
-  names <- rownames(df)
+  names <- rownames(df) %>%
+    stringr::str_remove(pattern = "^.*;")
   
   df <- df %>% mutate(counts = rowMeans(select(., starts_with("Mean")), na.rm = TRUE))
     
@@ -145,6 +146,9 @@ output$heatmap_binomial <- renderPlot({
   binomial_res_names <- rownames(binomial_res[binomial_res$p.adjust < input$pval_cutoff3 ,])
   
   total <- exprs(corrected)
+  rownames(total) <- rownames(total) %>%
+    stringr::str_remove(pattern = "^.*;")
+  
   total <- total[rownames(total) %in% binomial_res_names ,]
   
   ####
@@ -171,6 +175,8 @@ output$expanded_heatmap_binomial <- downloadHandler(
     binomial_res_names <- rownames(binomial_res[binomial_res$p.adjust < input$pval_cutoff3 ,])
     
     total <- exprs(corrected)
+    rownames(total) <- rownames(total) %>%
+      stringr::str_remove(pattern = "^.*;")
     total <- total[rownames(total) %in% binomial_res_names ,]
     target <- pData(corrected)
     

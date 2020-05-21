@@ -76,7 +76,8 @@ output$volcano1 <- renderPlotly({
   
   df <- Poisson()
   
-  names <- rownames(df)
+  names <- rownames(df) %>%
+    stringr::str_remove(pattern = "^.*;")
   
   df <- df %>% mutate(counts = rowMeans(select(., starts_with("Mean")), na.rm = TRUE))
   
@@ -147,6 +148,8 @@ output$heatmap_poisson <- renderPlot({
   pois_res_names <- rownames(pois_res[pois_res$p.adjust < input$pval_cutoff1 ,])
 
   total <- exprs(corrected)
+  rownames(total) <- rownames(total) %>%
+    stringr::str_remove(pattern = "^.*;")
   total <- total[rownames(total) %in% pois_res_names ,]
   
   ####
@@ -171,6 +174,8 @@ output$expanded_heatmap_poisson <- downloadHandler(
     pois_res_names <- rownames(pois_res[pois_res$p.adjust < input$pval_cutoff1 ,])
 
     total <- exprs(corrected)
+    rownames(total) <- rownames(total) %>%
+      stringr::str_remove(pattern = "^.*;")
     total <- total[rownames(total) %in% pois_res_names ,]
     target <- pData(corrected)
 
