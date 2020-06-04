@@ -71,9 +71,12 @@ dashboardPage(skin = "blue",
               p(("Code available on Github:"),a("https://github.com/pcastellanoescuder/POMAcounts",
                                                 href="https://github.com/pcastellanoescuder/POMAcounts"),
                 align="center",width=4),
-              p(("POMA R package available on Github:"),a("https://github.com/pcastellanoescuder/POMA",
-                                                          href="https://github.com/pcastellanoescuder/POMA"),
-                align="center",width=4)
+              p(("This app is based on "), 
+                a("msmsEDA", href = "https://www.bioconductor.org/packages/release/bioc/html/msmsEDA.html"), "and",
+                a("msmsTests", href = "https://www.bioconductor.org/packages/release/bioc/html/msmsTests.html"), 
+                "Bioconductor packages by Josep Gregori, Alex Sánchez and Josep Villanueva", align = "center", width = 4)
+              
+              
               )),
 
     ## GOOGLE ANALYTICS
