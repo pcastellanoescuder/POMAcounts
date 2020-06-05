@@ -29,9 +29,10 @@ dashboardPage(skin = "blue",
 
     tags$head(
       tags$link(rel = "stylesheet", type = "text/css", href = "mycss.css"),
-      tags$style(HTML("
-      .shiny-output-error-validation {
-        color: red; }"))
+       tags$style(HTML("
+       .shiny-output-error-validation {color: red;}
+       .dataTables_scrollBody {transform:rotateX(180deg);}
+       .dataTables_scrollBody table {transform:rotateX(180deg);}"))
     ),
     tabItems(
       tabItem(tabName = "inputdata",
@@ -75,8 +76,7 @@ dashboardPage(skin = "blue",
                 a("msmsEDA", href = "https://www.bioconductor.org/packages/release/bioc/html/msmsEDA.html"), "and",
                 a("msmsTests", href = "https://www.bioconductor.org/packages/release/bioc/html/msmsTests.html"), 
                 "Bioconductor packages by Josep Gregori, Alex Sánchez and Josep Villanueva", align = "center", width = 4)
-              
-              
+
               )),
 
     ## GOOGLE ANALYTICS

@@ -1,36 +1,64 @@
 
 proteinesInput <- reactive({
   
-  infile <- input$proteines
+  if(input$example_data == 'yes'){
     
-  if (is.null(infile)){
+    data(msms.dataset)
+    
+    proteines <- Biobase::exprs(msms.dataset) %>% 
+      as.data.frame() %>%
+      rownames_to_column("feature") %>%
+      mutate(gene = "GN=NA ") %>%
+      dplyr::select(gene, feature, everything())
+      
+  } else {
+    
+    infile <- input$proteines
+    
+    if (is.null(infile)){
       return(NULL)
-      }
-  
-  else {
-    proteines <- read.table(infile$datapath, header = T, sep = "\t")
     }
-  })
+    
+    else {
+      proteines <- read.table(infile$datapath, header = T, sep = "\t")
+    }
+    
+  }
+
+})
+
+##
 
 targetInput <- reactive({
   
-  infile <- input$target
-  
-  if (is.null(infile)){
-    return(NULL)
+  if(input$example_data == 'yes'){
+    
+    data(msms.dataset)
+    
+    target <- Biobase::pData(msms.dataset) %>%
+      rownames_to_column("ID")
+    
+  } else {
+    
+    infile <- input$target
+    
+    if (is.null(infile)){
+      return(NULL)
+    }
+    
+    else {
+      target <- read.table(infile$datapath, header = T, sep = "\t")
+    }
+    
   }
-  
-  else {
-    target <- read.table(infile$datapath, header = T, sep = "\t")
-  }
+
 })
 
-
-#################
+##
 
 datasetInput <- reactive({
   
-  if (!is.null(proteinesInput()) & !is.null(targetInput())){
+  if(!is.null(proteinesInput()) & !is.null(targetInput())){
     
     proteines <- proteinesInput()
     target <- targetInput()
@@ -38,7 +66,7 @@ datasetInput <- reactive({
     colnames(target) <- c("Sample", "Treatment", "Batch")
     colnames(proteines)[2] <- "Accession"
     colnames(proteines)[1] <- "gene_name"
-    
+
     proteines <- proteines %>%
       mutate(Accession = paste0(gene_name, ";", Accession))
     
@@ -63,7 +91,14 @@ datasetInput <- reactive({
                   
 output$contents <- DT::renderDataTable({
   
-  datatable(datasetInput()$proteines, 
+  prot <- datasetInput()$proteines 
+
+  names <- rownames(prot) %>%
+    stringr::str_remove(pattern = "^.*;")
+  
+  rownames(prot) <- names
+  
+  datatable(prot, 
             class = 'cell-border stripe', 
             rownames = TRUE, options(list(scrollX = TRUE)))
   })

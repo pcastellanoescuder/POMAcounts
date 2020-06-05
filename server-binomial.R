@@ -103,37 +103,20 @@ output$volcano3 <- renderPlotly({
                                                                          no = "none"),
                                                             no = "Up-regulated"))))
   
-  if(!isTRUE(input$show_counts3)){
-    
-    ggplotly(ggplot(data = df, aes(x = FC, y = -log10(pvalue), color = threshold, labels = names)) +
-               geom_point(size = 1.75, alpha = 0.8) +
-               xlim(c(-(input$xlim3), input$xlim3)) +
-               xlab("log2 Fold Change") +
-               ylab("-log10 p-value") +
-               scale_y_continuous(trans = "log1p") +
-               geom_vline(xintercept = -log2(log2FC3), colour = "black", linetype = "dashed") +
-               geom_vline(xintercept = log2(log2FC3), colour = "black", linetype = "dashed") +
-               geom_hline(yintercept = -log10(input$pval_cutoff3), colour = "black", linetype = "dashed") +
-               theme(legend.position = "none") +
-               theme_bw() +
-               labs(color = "") +
-               scale_color_manual(values = c("Down-regulated" = "#E64B35", "Up-regulated" = "#3182bd", "none" = "#636363")))
-  }
-  
-  else{
-    
-    ggplotly(ggplot(data = df, aes(x = FC, y = -log10(pvalue), color = counts, labels = names)) +
-               geom_point(size = 1.75, alpha = 0.8) +
-               xlim(c(-(input$xlim3), input$xlim3)) +
-               xlab("log2 Fold Change") +
-               ylab("-log10 p-value") +
-               scale_y_continuous(trans = "log1p") +
-               geom_vline(xintercept = -log2(log2FC3), colour = "black", linetype = "dashed") +
-               geom_vline(xintercept = log2(log2FC3), colour = "black", linetype = "dashed") +
-               geom_hline(yintercept = -log10(input$pval_cutoff3), colour = "black", linetype = "dashed") +
-               theme_bw())
-    
-  }
+  ggplotly(ggplot(data = df, aes(x = FC, y = -log10(pvalue), color = threshold, labels = names)) +
+             {if(!input$show_counts3)geom_point(size = 1.75, alpha = 0.8)} +
+             {if(input$show_counts3)geom_point(aes(size = counts), alpha = 0.8)} +
+             xlim(c(-(input$xlim3), input$xlim3)) +
+             xlab("log2 Fold Change") +
+             ylab("-log10 p-value") +
+             scale_y_continuous(trans = "log1p") +
+             geom_vline(xintercept = -log2(log2FC3), colour = "black", linetype = "dashed") +
+             geom_vline(xintercept = log2(log2FC3), colour = "black", linetype = "dashed") +
+             geom_hline(yintercept = -log10(input$pval_cutoff3), colour = "black", linetype = "dashed") +
+             theme(legend.position = "none") +
+             theme_bw() +
+             labs(color = "") +
+             scale_color_manual(values = c("Down-regulated" = "#E64B35", "Up-regulated" = "#3182bd", "none" = "#636363")))
   
 })
 
