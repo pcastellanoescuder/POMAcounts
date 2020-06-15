@@ -116,6 +116,7 @@ output$volcano2 <- renderPlotly({
              theme(legend.position = "none") +
              theme_bw() +
              labs(color = "") +
+             {if(input$labels2)geom_text(data = df[df$threshold != "none" ,], aes(label = names))} +
              scale_color_manual(values = c("Down-regulated" = "#E64B35", "Up-regulated" = "#3182bd", "none" = "#636363")))
 
 })

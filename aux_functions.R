@@ -41,11 +41,11 @@ heatmap.2jg <-
     else if (Colv == "Rowv" && !isTRUE(Rowv)) 
       Colv <- FALSE
     if (length(di <- dim(x)) != 2 || !is.numeric(x)) 
-      stop("`x' must be a numeric matrix")
+      stop("x must be a numeric matrix")
     nr <- di[1]
     nc <- di[2]
     if (nr <= 1 || nc <= 1) 
-      stop("`x' must have at least 2 rows and 2 columns")
+      stop("x must have at least 2 rows and 2 columns")
     if (!is.numeric(margins) || length(margins) != 2) 
       stop("`margins' must be a numeric vector of length 2")
     if (missing(cellnote)) 

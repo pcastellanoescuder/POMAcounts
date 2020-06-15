@@ -116,6 +116,7 @@ output$volcano3 <- renderPlotly({
              theme(legend.position = "none") +
              theme_bw() +
              labs(color = "") +
+             {if(input$labels3)geom_text(data = df[df$threshold != "none" ,], aes(label = names))} +
              scale_color_manual(values = c("Down-regulated" = "#E64B35", "Up-regulated" = "#3182bd", "none" = "#636363")))
   
 })
@@ -169,7 +170,7 @@ output$expanded_heatmap_binomial <- downloadHandler(
     
     h <- nrow(exprs(new_corrected))/(2.54/0.35)
     pdf(file = file, width = 7, height = h)
-    exp.heatmap(new_corrected, "Treatment", h = h, tit = "")
+    exp.heatmap(new_corrected, "Treatment", h = h, tit = "") 
     dev.off()
   }
 )
