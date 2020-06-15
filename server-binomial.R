@@ -116,12 +116,62 @@ output$volcano3 <- renderPlotly({
              theme(legend.position = "none") +
              theme_bw() +
              labs(color = "") +
-             {if(input$labels3)geom_text(data = df[df$threshold != "none" ,], aes(label = names))} +
              scale_color_manual(values = c("Down-regulated" = "#E64B35", "Up-regulated" = "#3182bd", "none" = "#636363")))
   
 })
 
-####
+##
+
+output$annotated_volcano3 <- renderPlot({
+  
+  df <- BINOMIAL()
+  
+  names <- rownames(df) %>%
+    stringr::str_remove(pattern = "^.*;")
+  
+  df <- df %>% mutate(counts = rowMeans(select(., starts_with("Mean")), na.rm = TRUE))
+  
+  if(input$pval3 == "raw"){
+    
+    df <- data.frame(pvalue = df$p.value, FC = round(df$log2FC, 2), names = names, counts = round(df$counts, 2))
+    
+  }
+  
+  else {
+    
+    df <- data.frame(pvalue = df$p.adjust, FC = round(df$log2FC, 2), names = names, counts = round(df$counts, 2))
+    
+  }
+  
+  log2FC3 <- 2^(input$log2FC3)
+  
+  df <- mutate(df, threshold = as.factor(ifelse(df$pvalue >= input$pval_cutoff3,
+                                                yes = "none",
+                                                no = ifelse(df$FC < log2(log2FC3),
+                                                            yes = ifelse(df$FC < -log2(log2FC3),
+                                                                         yes = "Down-regulated",
+                                                                         no = "none"),
+                                                            no = "Up-regulated"))))
+  
+  ggplot(data = df, aes(x = FC, y = -log10(pvalue), color = threshold, labels = names)) +
+    {if(!input$show_counts3)geom_point(size = 1.75, alpha = 0.8)} +
+    {if(input$show_counts3)geom_point(aes(size = counts), alpha = 0.8)} +
+    xlim(c(-(input$xlim3), input$xlim3)) +
+    xlab("log2 Fold Change") +
+    ylab("-log10 p-value") +
+    scale_y_continuous(trans = "log1p") +
+    geom_vline(xintercept = -log2(log2FC3), colour = "black", linetype = "dashed") +
+    geom_vline(xintercept = log2(log2FC3), colour = "black", linetype = "dashed") +
+    geom_hline(yintercept = -log10(input$pval_cutoff3), colour = "black", linetype = "dashed") +
+    theme(legend.position = "none") +
+    theme_bw() +
+    labs(color = "") +
+    ggrepel::geom_label_repel(data = df[df$threshold != "none" ,], aes(label = names), show.legend = F) +
+    scale_color_manual(values = c("Down-regulated" = "#E64B35", "Up-regulated" = "#3182bd", "none" = "#636363"))
+  
+})
+
+##
 
 output$heatmap_binomial <- renderPlot({
   
