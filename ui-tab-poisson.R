@@ -14,14 +14,16 @@ fluidPage(column(width = 3,
                    selectInput("adjustment_method_poisson", "pvalue Adustment Method:",
                                choices = c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"), selected = "BH"),
                    
-                   h4("Volcano Plot Parameters:"),
+                   h4("Graphical Parameters:"),
                    
                    checkboxInput("show_counts1", "Show counts mean", FALSE),
                    
                    selectInput("pval1", "pvalue type", choices = c("raw", "adjusted"), selected = "raw"),
                    numericInput("pval_cutoff1", "pvalue cutoff (volcano plot and heatmap)", value = 0.05),
                    numericInput("log2FC1", "log2 Fold Change cutoff", value = 1.5),
-                   numericInput("xlim1", "x-label limit", value = 5)
+                   numericInput("xlim1", "x-label limit", value = 5),
+                   
+                   checkboxInput("prot_names1", "Heatmap rownames", FALSE)
                  
                  )
                  

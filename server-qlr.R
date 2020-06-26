@@ -182,18 +182,18 @@ output$heatmap_qlr <- renderPlot({
   total <- exprs(corrected)
   rownames(total) <- rownames(total) %>%
     stringr::str_remove(pattern = "^.*;")
+  
   total <- total[rownames(total) %in% qlr_res_names ,]
-  
-  ####
-  
   target <- pData(corrected)
   
-  my_group <- as.numeric(as.factor(target$Treatment))
-  colSide <- brewer.pal(8, "Dark2")[my_group]
-  colMain <- colorRampPalette( c("green", "black", "red"), space = "rgb")(64)
+  ##
   
-  heatmap(t(scale(t(total))), ColSideColors = colSide, col = colMain, labRow = NA)
+  ha <- ComplexHeatmap::HeatmapAnnotation(df = data.frame(Group = target[,1]), show_legend = FALSE)
   
+  ComplexHeatmap::Heatmap(t(scale(t(total))), name = "Value", top_annotation = ha,
+                          show_row_names = input$prot_names2, show_column_names = TRUE, 
+                          col = c("green", "black", "red"), show_heatmap_legend = FALSE)
+
 })
 
 ##
