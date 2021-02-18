@@ -42,7 +42,8 @@ QLR <- reactive({
     remove_rownames() %>%
     column_to_rownames("Protein") %>%
     select(GeneName, everything()) %>%
-    select(-names)
+    select(-names) %>%
+    filter(.[[2]] > input$sc_cutoff_qlr & .[[3]] > input$sc_cutoff_qlr)
   
   return(qlr_res)
   
@@ -62,11 +63,11 @@ output$qlrResults <- DT::renderDataTable({
                     list("copy", "print", list(
                       extend="collection",
                       buttons=list(list(extend="csv",
-                                        filename="Poma_Quasi-likelihood"),
+                                        filename="POMAcounts_Quasi-likelihood"),
                                    list(extend="excel",
-                                        filename="Poma_Quasi-likelihood"),
+                                        filename="POMAcounts_Quasi-likelihood"),
                                    list(extend="pdf",
-                                        filename="Poma_Quasi-likelihood")),
+                                        filename="POMAcounts_Quasi-likelihood")),
                       text="Dowload")),
                   order=list(list(2, "desc")),
                   pageLength = nrow(QLR())))
@@ -200,7 +201,7 @@ output$heatmap_qlr <- renderPlot({
 
 output$expanded_heatmap_qlr <- downloadHandler(
   
-  filename = paste0(Sys.Date(), "_TEST_POMA_Expanded_Heatmap_qlr.pdf"),
+  filename = paste0(Sys.Date(), "_TEST_POMAcounts_Expanded_Heatmap_qlr.pdf"),
   content = function(file) {
     
     corrected <- Barplot()$corrected

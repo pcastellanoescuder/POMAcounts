@@ -42,7 +42,8 @@ Poisson <- reactive({
     remove_rownames() %>%
     column_to_rownames("Protein") %>%
     select(GeneName, everything()) %>%
-    select(-names)
+    select(-names) %>%
+    filter(.[[2]] > input$sc_cutoff_poisson & .[[3]] > input$sc_cutoff_poisson)
   
   return(pois_res)
   
@@ -62,11 +63,11 @@ output$poissonResults <- DT::renderDataTable({
                     list("copy", "print", list(
                       extend="collection",
                       buttons=list(list(extend="csv",
-                                        filename="Poma_Poisson"),
+                                        filename="POMAcounts_Poisson"),
                                    list(extend="excel",
-                                        filename="Poma_Poisson"),
+                                        filename="POMAcounts_Poisson"),
                                    list(extend="pdf",
-                                        filename="Poma_Poisson")),
+                                        filename="POMAcounts_Poisson")),
                       text="Dowload")),
                   order=list(list(2, "desc")),
                   pageLength = nrow(Poisson())))
@@ -198,7 +199,7 @@ output$heatmap_poisson <- renderPlot({
 
 output$expanded_heatmap_poisson <- downloadHandler(
 
-  filename = paste0(Sys.Date(), "_TEST_POMA_Expanded_Heatmap_poisson.pdf"),
+  filename = paste0(Sys.Date(), "_TEST_POMAcounts_Expanded_Heatmap_poisson.pdf"),
   content = function(file) {
 
     corrected <- Barplot()$corrected

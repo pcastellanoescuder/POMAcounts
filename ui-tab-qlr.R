@@ -13,6 +13,9 @@ fluidPage(column(width = 3,
                  
                    selectInput("adjustment_method_qlr", "pvalue Adustment Method:",
                                choices = c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"), selected = "BH"),
+                   numericInput("sc_cutoff_qlr", "Spectral counts cut-off", value = 4),
+                   
+                   br(),
                    
                    h4("Graphical Parameters:"),
                    
