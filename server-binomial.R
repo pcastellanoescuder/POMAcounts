@@ -34,6 +34,7 @@ BINOMIAL <- reactive({
   binomial_res <- cbind(means, binomial_res) %>% 
     rename(log2FC = LogFC) %>% 
     mutate(log2FC = round(log2FC, 2), 
+           log2FC = log2FC*-1,
            LR = round(LR, 3),
            names = my_names,
            GeneName = stringr::str_remove(names, pattern = "^.*GN="),
@@ -43,7 +44,7 @@ BINOMIAL <- reactive({
     column_to_rownames("Protein") %>%
     select(GeneName, everything()) %>%
     select(-names) %>%
-    filter(.[[2]] > input$sc_cutoff_bin & .[[3]] > input$sc_cutoff_bin)
+    filter(.[[2]] > input$sc_cutoff_bin)
   
   return(binomial_res)
   

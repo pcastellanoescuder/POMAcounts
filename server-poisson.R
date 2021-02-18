@@ -34,6 +34,7 @@ Poisson <- reactive({
   pois_res <- cbind(means, pois_res) %>% 
     rename(log2FC = LogFC) %>% 
     mutate(log2FC = round(log2FC, 2), 
+           log2FC = log2FC*-1,
            D = round(D, 3),
            names = my_names,
            GeneName = stringr::str_remove(names, pattern = "^.*GN="),
@@ -43,7 +44,7 @@ Poisson <- reactive({
     column_to_rownames("Protein") %>%
     select(GeneName, everything()) %>%
     select(-names) %>%
-    filter(.[[2]] > input$sc_cutoff_poisson & .[[3]] > input$sc_cutoff_poisson)
+    filter(.[[2]] > input$sc_cutoff_poisson)
   
   return(pois_res)
   

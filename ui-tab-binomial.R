@@ -14,6 +14,7 @@ fluidPage(column(width = 3,
                    selectInput("adjustment_method_binomial", "pvalue Adustment Method:",
                                choices = c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"), selected = "BH"),
                    numericInput("sc_cutoff_bin", "Spectral counts cut-off", value = 4),
+                   helpText("Note that this filter will only be applied to the second column."),
 
                    br(),
                    
