@@ -7,6 +7,7 @@ dashboardPage(skin = "blue",
   dashboardHeader(title = logo_poma),
   
   dashboardSidebar(sidebarMenu(
+    menuItem("Home", tabName = "home", icon = icon("home")),
     menuItem("Input Data", tabName = "inputdata", icon = icon("upload")),
     menuItem("Exploratory Data Analysis", tabName = "eda", icon = icon("search"),
              menuSubItem("Median Bar Plot", tabName = "mbp"),
@@ -19,9 +20,12 @@ dashboardPage(skin = "blue",
     menuItem("Statistical Analysis", tabName = "tests", icon = icon("chart-bar"),
              menuSubItem("Poisson GLM", tabName = "poisson"),
              menuSubItem("Quasi-likelihood GLM", tabName = "qlr"),
-             menuSubItem("Negative Binomial GLM", tabName = "binomial"))
-
-  )),
+             menuSubItem("Negative Binomial GLM", tabName = "binomial")),
+    menuItem("License", tabName = "license", icon = icon("clipboard")),
+    menuItem("Code of Conduct", tabName = "conduct", icon = icon("clipboard-check")),
+    menuItem("Contact", tabName = "contact", icon = icon("user"))
+    )
+    ),
 
   dashboardBody(
     
@@ -35,6 +39,8 @@ dashboardPage(skin = "blue",
        .dataTables_scrollBody table {transform:rotateX(180deg);}"))
     ),
     tabItems(
+      tabItem(tabName = "home",
+              source("ui-tab-home.R",local=TRUE)$value),
       tabItem(tabName = "inputdata",
               source("ui-tab-inputdata.R",local=TRUE)$value),
       tabItem(tabName = "mbp",
@@ -56,7 +62,13 @@ dashboardPage(skin = "blue",
       tabItem(tabName = "qlr",
               source("ui-tab-qlr.R",local=TRUE)$value),
       tabItem(tabName = "binomial",
-              source("ui-tab-binomial.R",local=TRUE)$value)
+              source("ui-tab-binomial.R",local=TRUE)$value),
+      tabItem(tabName = "license",
+              source("ui-tab-license.R",local=TRUE)$value),
+      tabItem(tabName = "conduct",
+              source("ui-tab-conduct.R",local=TRUE)$value),
+      tabItem(tabName = "contact",
+              source("ui-tab-contact.R",local=TRUE)$value)
       ),
 
     tags$hr(),
@@ -68,7 +80,7 @@ dashboardPage(skin = "blue",
               p(("Biomarkers and Nutritional & Food Metabolomics Research Group"),"from",
                 align="center", width=3),
               p(("University of Barcelona"),align="center",width = 3),
-              p(("Copyright (C) 2019, code licensed under GPLv3"), align = "center", width = 4),
+              p(("Copyright (C) 2021, code licensed under GPLv3"), align = "center", width = 4),
               p(("Code available on Github:"),a("https://github.com/pcastellanoescuder/POMAcounts",
                                                 href="https://github.com/pcastellanoescuder/POMAcounts"),
                 align="center",width=4),
