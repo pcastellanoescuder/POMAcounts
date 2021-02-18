@@ -1,6 +1,5 @@
 
 # Welcome to POMAcounts!
-======================
 
 <!-- badges: start -->
 
@@ -10,11 +9,11 @@
 
 <!-- badges: end -->
 
-### Overview
+<h2 style="color:black">Overview</h2>
 
 POMAcounts is a web-based tool for exploratory data analysis and statistical analysis of mass spectrometry spectral counts data. This GUI is based on the R/Bioconductor packages [msmsEDA](https://bioconductor.org/packages/release/bioc/html/msmsEDA.html) (Gregori et al., 2020a) and [msmsTests](https://bioconductor.org/packages/release/bioc/html/msmsTests.html) (Gregori et al., 2020b). The name of POMAcounts is given by the large similarity of both the frontend and the backend that it shares with [POMAShiny](https://github.com/pcastellanoescuder/POMAShiny) web application. POMAcounts is hosted at [http://uebshiny.vhir.org:3838/POMAcounts](http://uebshiny.vhir.org:3838/POMAcounts).
 
-### Code of Conduct
+<h2 style="color:black">Code of Conduct</h2>
 
 Please note that the POMAcounts project is released with a [Contributor Code of Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
 
