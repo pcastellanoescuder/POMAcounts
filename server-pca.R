@@ -6,14 +6,14 @@ PCAplot <- reactive({
   raw <- Barplot()$raw
     
   res_pca1 <- mixOmics::pca(t(exprs(raw)))
-  res_pca <- cbind(pData(raw), res_pca1$x)
+  res_pca <- cbind(pData(raw), res_pca1$x) # change "x" for "variates$X"
   
   pcaplot1 <- ggplot(res_pca, aes(PC1, PC2, color = Treatment, shape = Batch)) +
     geom_point(size = 3, alpha = 0.8) +
     {if(input$labs == "yes")ggrepel::geom_label_repel(aes(label = rownames(res_pca)), show.legend = F)} +
     theme_bw() +
-    xlab(paste0("PC1 (", round(100*(res_pca1$explained_variance)[1], 2), "%)")) +
-    ylab(paste0("PC2 (", round(100*(res_pca1$explained_variance)[2], 2), "%)")) +
+    xlab(paste0("PC1 (", round(100*(res_pca1$explained_variance)[1], 2), "%)")) + # change "explained_variance" for "prop_expl_var$X"
+    ylab(paste0("PC2 (", round(100*(res_pca1$explained_variance)[2], 2), "%)")) + # change "explained_variance" for "prop_expl_var$X"
     scale_color_brewer(palette = "Dark2")
 
   ### NORM
@@ -21,14 +21,14 @@ PCAplot <- reactive({
   norm <- Barplot()$norm
   
   res_pca1 <- mixOmics::pca(t(exprs(norm)))
-  res_pca <- cbind(pData(norm), res_pca1$x)
+  res_pca <- cbind(pData(norm), res_pca1$x) # change "x" for "variates$X"
   
   pcaplot2 <- ggplot(res_pca, aes(PC1, PC2, color = Treatment, shape = Batch)) +
     geom_point(size = 3, alpha = 0.8) +
     {if(input$labs == "yes")ggrepel::geom_label_repel(aes(label = rownames(res_pca)), show.legend = F)} +
     theme_bw() +
-    xlab(paste0("PC1 (", round(100*(res_pca1$explained_variance)[1], 2), "%)")) +
-    ylab(paste0("PC2 (", round(100*(res_pca1$explained_variance)[2], 2), "%)")) +
+    xlab(paste0("PC1 (", round(100*(res_pca1$explained_variance)[1], 2), "%)")) + # change "explained_variance" for "prop_expl_var$X"
+    ylab(paste0("PC2 (", round(100*(res_pca1$explained_variance)[2], 2), "%)")) + # change "explained_variance" for "prop_expl_var$X"
     scale_color_brewer(palette = "Dark2")
   
   ### CORR
@@ -36,14 +36,14 @@ PCAplot <- reactive({
   corrected <- Barplot()$corrected
   
   res_pca1 <- mixOmics::pca(t(exprs(corrected)))
-  res_pca <- cbind(pData(corrected), res_pca1$x)
+  res_pca <- cbind(pData(corrected), res_pca1$x) # change "x" for "variates$X"
   
   pcaplot3 <- ggplot(res_pca, aes(PC1, PC2, color = Treatment, shape = Batch)) +
     geom_point(size = 3, alpha = 0.8) +
     {if(input$labs == "yes")ggrepel::geom_label_repel(aes(label = rownames(res_pca)), show.legend = F)} +
     theme_bw() +
-    xlab(paste0("PC1 (", round(100*(res_pca1$explained_variance)[1], 2), "%)")) +
-    ylab(paste0("PC2 (", round(100*(res_pca1$explained_variance)[2], 2), "%)")) +
+    xlab(paste0("PC1 (", round(100*(res_pca1$explained_variance)[1], 2), "%)")) + # change "explained_variance" for "prop_expl_var$X"
+    ylab(paste0("PC2 (", round(100*(res_pca1$explained_variance)[2], 2), "%)")) + # change "explained_variance" for "prop_expl_var$X"
     scale_color_brewer(palette = "Dark2")
   
   return(list(pcaplot1 = pcaplot1, pcaplot2 = pcaplot2, pcaplot3 = pcaplot3))

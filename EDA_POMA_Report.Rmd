@@ -1,5 +1,5 @@
 ---
-title: "POMA: R Package for Statistical Analysis of Mass Spectrometry Data"
+title: "POMAcounts: a web-based tool for exploratory data analysis and statistical analysis of mass spectrometry spectral counts data"
 subtitle: "Exploratory Data Analysis - Report"
 date: '`r format(Sys.Date(), "%B, %Y")`'
 output: 
