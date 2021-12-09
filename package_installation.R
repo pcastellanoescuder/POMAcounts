@@ -14,35 +14,52 @@
 # You should have received a copy of the GNU General Public License
 # along with POMAcounts. If not, see <https://www.gnu.org/licenses/>.
 
-#### CRAN PACKAGES
+# Installs all requirements for generating data and running the app
 
+cran_pkgs <- c(
+  "shiny", 
+  "BiocManager",
+  "devtools", 
+  "shinydashboard", 
+  "DT", 
+  "reshape2", 
+  "tidyverse", 
+  "gplots", 
+  "RColorBrewer", 
+  "shinyBS", 
+  "ggrepel", 
+  "gtools", 
+  "shinyhelper", 
+  "plotly", 
+  "dashboardthemes"
+  )
+
+bioc_pkgs <- c(
+  "ComplexHeatmap",
+  "msmsEDA", 
+  "msmsTests", 
+  "mixOmics", 
+  "Biobase", 
+  "MSnbase"
+  )
+
+# Install CRAN packages
 installifnot <- function(pckgName){
   if (!(require(pckgName, character.only = TRUE))) {
     install.packages(pckgName, dep = TRUE)
-    require(pckgName, character.only = TRUE)
+    library(pckgName, character.only = TRUE)
   }
 }
 
-pk1 <- c("shiny", "devtools", "shinydashboard", "DT", "reshape2", "tidyverse", "gplots", "RColorBrewer", 
-         "shinyBS", "ggrepel", "gtools", "shinyhelper", "plotly", "dashboardthemes")
-         
-for (i in 1:length(pk1)){
-  installifnot(pk1[i])
-}
+lapply(cran_pkgs, installifnot)
 
-#### BIOCONDUCTOR PACKAGES
-
+# Install Bioconductor packages
 installBiocifnot <- function(pckgName){
   if (!(require(pckgName, character.only = TRUE))) {
     BiocManager::install(pckgName)
-    require(pckgName, character.only = TRUE)
+    library(pckgName, character.only = TRUE)
   }
 }
 
-pk2 <- c("msmsEDA", "msmsTests", "mixOmics", "Biobase", "MSnbase")
-for (i in 1:length(pk2)){
-  installBiocifnot(pk2[i])
-}
-
-
+lapply(bioc_pkgs, installBiocifnot)
 

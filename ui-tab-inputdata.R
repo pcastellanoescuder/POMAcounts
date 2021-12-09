@@ -7,10 +7,10 @@ tabPanel("Input Data",
                   
                   wellPanel(
                   
-                  # downloadButton("report", "Exploratory report", style="color: #fff; background-color: #00b300; border-color: #009900"),
-                  
-                  # br(),
-                  # br(),
+                  downloadButton("report", "Exploratory report", style="color: #fff; background-color: #00b300; border-color: #009900"),
+
+                  br(),
+                  br(),
                   
                   radioButtons("example_data", "Do you want to use our example data?",
                                choices = c("Yes" = 'yes',

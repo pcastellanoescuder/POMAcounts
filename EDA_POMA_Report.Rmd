@@ -277,7 +277,7 @@ normtable_subjectsXXX %>%
 #### RAW
 
 res_pca1 <- mixOmics::pca(t(exprs(raw)))
-res_pca <- cbind(pData(raw), res_pca1$x)
+res_pca <- cbind(pData(raw), res_pca1$variates$X)
   
 ggplot(res_pca, aes(PC1, PC2, color = Treatment, shape = Batch)) +
   geom_point(size = 3, alpha = 0.8) +
@@ -294,7 +294,7 @@ ggplot(res_pca, aes(PC1, PC2, color = Treatment, shape = Batch)) +
 #### NORMALIZED
 
 res_pca1 <- mixOmics::pca(t(exprs(norm)))
-res_pca <- cbind(pData(norm), res_pca1$x)
+res_pca <- cbind(pData(norm), res_pca1$variates$X)
   
 ggplot(res_pca, aes(PC1, PC2, color = Treatment, shape = Batch)) +
   geom_point(size = 3, alpha = 0.8) +
@@ -311,7 +311,7 @@ ggplot(res_pca, aes(PC1, PC2, color = Treatment, shape = Batch)) +
 #### CORRECTED
 
 res_pca1 <- mixOmics::pca(t(exprs(corrected)))
-res_pca <- cbind(pData(corrected), res_pca1$x)
+res_pca <- cbind(pData(corrected), res_pca1$variates$X)
   
 ggplot(res_pca, aes(PC1, PC2, color = Treatment, shape = Batch)) +
   geom_point(size = 3, alpha = 0.8) +
