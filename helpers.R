@@ -1,6 +1,7 @@
 
 library(shiny)
 library(DT)
+library(DESeq2)
 library(shinydashboard)
 library(tidyverse)
 library(RColorBrewer)

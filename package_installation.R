@@ -22,6 +22,7 @@ cran_pkgs <- c(
   "devtools", 
   "shinydashboard", 
   "DT", 
+  "DESeq2",
   "reshape2", 
   "tidyverse", 
   "gplots", 
